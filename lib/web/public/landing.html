@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ManzxyMD — Bot WhatsApp Multi Device</title>
+<meta name="description" content="Bot WhatsApp multi device dengan panel web: jadibot instan, sewa bot ke grup, topup saldo, premium, dan monitor realtime. Ratusan perintah siap pakai.">
+<meta name="theme-color" content="#FFE500">
+<meta property="og:title" content="ManzxyMD — Bot WhatsApp Multi Device">
+<meta property="og:description" content="Jadibot instan, sewa bot ke grup, dan panel web realtime. Bayar QRIS, aktif otomatis.">
+<meta property="og:type" content="website">
+<link rel="manifest" href="/panel/manifest.webmanifest?v=8.11.1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23FFE500'/><text y='72' x='50' font-size='64' text-anchor='middle' font-family='monospace' font-weight='bold'>M</text></svg>">
+<style>
+    :root {
+        --yellow: #FFE500; --pink: #FF5DA2; --blue: #3D8BFF;
+        --cream: #FFF9E8; --ink: #16161a; --muted: #6b6b76;
+        --line: rgba(22,22,26,.14);
+        --card: #fff;
+        --shadow: 4px 4px 0 rgba(22,22,26,.9);
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    html, body {
+        font-family: 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+        background: var(--cream); color: var(--ink); line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+    }
+    body {
+        background-image:
+            radial-gradient(circle at 12% 0%, rgba(255,93,162,.10), transparent 33%),
+            radial-gradient(circle at 88% 100%, rgba(61,139,255,.10), transparent 33%);
+        background-attachment: fixed;
+    }
+    .wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+    section { scroll-margin-top: 20px; }
+
+    /* ── header ── */
+    header {
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 22px 0; gap: 12px; flex-wrap: wrap;
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-weight: 900; letter-spacing: .5px; }
+    .logo-box {
+        width: 40px; height: 40px; border-radius: 10px; background: var(--yellow);
+        display: grid; place-items: center; font-family: monospace; font-weight: bold;
+        font-size: 22px; border: 2px solid var(--ink);
+    }
+    .brand span b { color: var(--pink); }
+    nav { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    nav a {
+        display: inline-block; padding: 9px 16px;
+        border: 2px solid var(--ink); border-radius: 10px; background: var(--card);
+        color: var(--ink); text-decoration: none; font-weight: 800; font-size: 13px;
+        box-shadow: 3px 3px 0 var(--ink); transition: transform .08s, box-shadow .08s;
+    }
+    nav a.primary { background: var(--yellow); }
+    nav a.plain { border-color: transparent; box-shadow: none; background: transparent; }
+    nav a.plain:hover { border-color: var(--ink); }
+    nav a:hover { transform: translate(-1px, -1px); box-shadow: 4px 4px 0 var(--ink); }
+
+    /* ── hero ── */
+    .hero { text-align: center; padding: 56px 0 20px; }
+    .hero h1 { font-size: clamp(30px, 5.5vw, 52px); font-weight: 900; letter-spacing: -1px; line-height: 1.12; }
+    .hero h1 em { font-style: normal; background: var(--yellow); padding: 0 10px; border-radius: 8px; box-decoration-break: clone; }
+    .hero p { margin: 16px auto 26px; max-width: 580px; color: var(--muted); font-size: 16px; font-weight: 600; }
+    .cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .cta a {
+        display: inline-block; padding: 13px 26px; border: 2px solid var(--ink);
+        border-radius: 12px; text-decoration: none; font-weight: 900; font-size: 14px;
+        box-shadow: 4px 4px 0 var(--ink); transition: transform .08s, box-shadow .08s;
+    }
+    .cta a.primary { background: var(--yellow); color: var(--ink); }
+    .cta a.ghost { background: var(--card); color: var(--ink); }
+    .cta a:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 var(--ink); }
+
+    /* ── strip statistik (angka real, di-inject server) ── */
+    .stats {
+        display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 10px; max-width: 720px; margin: 34px auto 0;
+    }
+    .stat {
+        background: var(--card); border: 2px solid var(--ink); border-radius: 12px;
+        padding: 12px 8px; box-shadow: 3px 3px 0 var(--ink);
+    }
+    .stat b { display: block; font-size: 24px; font-weight: 900; letter-spacing: -1px; line-height: 1.1; }
+    .stat span { font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+
+    /* ── preview panel ── */
+    .preview { padding: 40px 0 10px; }
+    .preview-frame {
+        border: 2px solid var(--ink); border-radius: 16px; overflow: hidden;
+        background: var(--card); box-shadow: 6px 6px 0 var(--ink);
+    }
+    .preview-bar {
+        display: flex; align-items: center; gap: 6px; padding: 9px 14px;
+        background: var(--yellow); border-bottom: 2px solid var(--ink);
+    }
+    .preview-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--ink); opacity: .55; }
+    .preview-url {
+        margin-left: 8px; font-family: monospace; font-size: 11px; font-weight: 700;
+        background: rgba(255,255,255,.7); padding: 2px 10px; border-radius: 999px;
+    }
+    .preview-body { display: grid; grid-template-columns: 168px 1fr; min-height: 250px; }
+    .preview-side {
+        border-right: 2px solid var(--ink); padding: 12px 10px;
+        background: rgba(22,22,26,.03); display: flex; flex-direction: column; gap: 5px;
+    }
+    .preview-side i {
+        display: block; height: 22px; border-radius: 7px; background: rgba(22,22,26,.09);
+    }
+    .preview-side i.on { background: var(--yellow); border: 1.5px solid var(--ink); }
+    .preview-main { padding: 14px; display: flex; flex-direction: column; gap: 10px; }
+    .preview-kpis { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .preview-kpi {
+        border: 1.5px solid var(--ink); border-radius: 9px; padding: 8px 10px;
+        background: rgba(61,139,255,.07);
+    }
+    .preview-kpi b { display: block; font-size: 17px; font-weight: 900; letter-spacing: -.5px; }
+    .preview-kpi span { font-size: 9px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; color: var(--muted); }
+    .preview-chart {
+        flex: 1; border: 1.5px solid var(--ink); border-radius: 9px;
+        padding: 10px; display: flex; align-items: flex-end; gap: 5px; min-height: 96px;
+        background: rgba(255,93,162,.05);
+    }
+    .preview-chart i {
+        flex: 1; background: var(--blue); border-radius: 3px 3px 0 0; opacity: .8;
+    }
+    .preview-note { text-align: center; color: var(--muted); font-size: 11.5px; font-weight: 600; margin-top: 12px; }
+
+    /* ── fitur ── */
+    .sec-head { text-align: center; padding: 46px 0 4px; }
+    .sec-head h2 { font-size: clamp(22px, 3.6vw, 30px); letter-spacing: -1px; }
+    .sec-head p { color: var(--muted); font-size: 13.5px; font-weight: 600; margin-top: 6px; }
+
+    .feats { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; padding: 22px 0 20px; }
+    .feat {
+        background: var(--card); border: 2px solid var(--ink); border-radius: 14px;
+        padding: 18px; box-shadow: var(--shadow);
+    }
+    .feat .ico { font-size: 26px; }
+    .feat h3 { font-size: 15px; margin: 8px 0 4px; }
+    .feat p { font-size: 12.5px; color: var(--muted); font-weight: 600; }
+    .feat .tag {
+        display: inline-block; margin-top: 9px; padding: 2px 9px; border-radius: 999px;
+        background: var(--yellow); border: 1.5px solid var(--ink);
+        font-size: 9.5px; font-weight: 900; letter-spacing: .06em;
+    }
+
+    /* ── langkah ── */
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; padding: 22px 0 20px; }
+    .step {
+        background: var(--card); border: 2px solid var(--ink); border-radius: 14px;
+        padding: 18px; box-shadow: var(--shadow); position: relative;
+    }
+    .step b.num {
+        display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%;
+        background: var(--pink); color: #fff; font-size: 14px; font-weight: 900;
+        border: 2px solid var(--ink); margin-bottom: 10px;
+    }
+    .step h3 { font-size: 14.5px; margin-bottom: 4px; }
+    .step p { font-size: 12.5px; color: var(--muted); font-weight: 600; }
+
+    /* ── harga ── */
+    .prices { padding: 6px 0 26px; }
+    .price-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 18px; margin-top: 20px; }
+    .price-col h3 {
+        font-size: 12px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase;
+        color: var(--muted); text-align: center; margin-bottom: 10px;
+    }
+    .land-price {
+        display: flex; justify-content: space-between; align-items: center;
+        border: 2px solid var(--ink); background: var(--card);
+        padding: 10px 14px; font-weight: 800; font-size: 14px;
+        box-shadow: 3px 3px 0 var(--ink); margin-bottom: 8px;
+    }
+    .land-price.hot { background: var(--yellow); }
+    .land-price strong { font-size: 15px; }
+    .land-empty { text-align: center; color: var(--muted); font-weight: 600; font-size: 13px; }
+
+    /* ── FAQ ── */
+    .faq { padding: 10px 0 30px; max-width: 760px; margin: 0 auto; }
+    .faq details {
+        background: var(--card); border: 2px solid var(--ink); border-radius: 12px;
+        padding: 0; margin-bottom: 10px; box-shadow: 3px 3px 0 var(--ink); overflow: hidden;
+    }
+    .faq summary {
+        padding: 13px 16px; font-weight: 800; font-size: 13.5px; cursor: pointer;
+        list-style: none; display: flex; justify-content: space-between; gap: 12px; align-items: center;
+    }
+    .faq summary::-webkit-details-marker { display: none; }
+    .faq summary::after { content: '+'; font-size: 18px; font-weight: 900; line-height: 1; }
+    .faq details[open] summary::after { content: '−'; }
+    .faq details[open] summary { background: var(--yellow); border-bottom: 2px solid var(--ink); }
+    .faq p { padding: 13px 16px; font-size: 13px; color: var(--muted); font-weight: 600; }
+    .faq p a { color: var(--ink); }
+
+    /* ── penutup ── */
+    .final { text-align: center; padding: 20px 0 50px; }
+    .final h2 { font-size: clamp(21px, 3.4vw, 28px); letter-spacing: -1px; margin-bottom: 8px; }
+    .final p { color: var(--muted); font-size: 13.5px; font-weight: 600; margin-bottom: 20px; }
+
+    footer { border-top: 2px solid var(--line); padding: 20px 0 34px; text-align: center; color: var(--muted); font-size: 12px; font-weight: 600; }
+    footer a { color: var(--ink); }
+    footer .links { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-bottom: 10px; }
+
+    @media (max-width: 640px) {
+        .hero { padding: 36px 0 14px; }
+        .preview-body { grid-template-columns: 1fr; }
+        .preview-side { display: none; }
+        nav a.plain { display: none; }
+    }
+
+    /* ── dark mode otomatis (mengikuti setelan sistem) ── */
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --cream: #141419; --ink: #F2EDE0; --muted: #9a97a0;
+            --line: rgba(255,255,255,.16);
+            --card: #1f1f26;
+            --shadow: 4px 4px 0 rgba(0,0,0,.6);
+        }
+        body {
+            background-image:
+                radial-gradient(circle at 12% 0%, rgba(255,93,162,.07), transparent 33%),
+                radial-gradient(circle at 88% 100%, rgba(61,139,255,.07), transparent 33%);
+        }
+        .land-price.hot, nav a.primary, .cta a.primary, .preview-bar, .feat .tag,
+        .faq details[open] summary { background: var(--yellow); color: #16161a; }
+        .logo-box, .step b.num { color: #16161a; }
+        .preview-url { background: rgba(0,0,0,.35); color: var(--ink); }
+        .preview-side { background: rgba(255,255,255,.04); }
+        .preview-side i { background: rgba(255,255,255,.12); }
+        .preview-side i.on { background: var(--yellow); }
+        .preview-kpi { background: rgba(61,139,255,.14); }
+        .preview-chart { background: rgba(255,93,162,.10); }
+        .preview-chart i { background: #6aa8ff; }
+        .preview-frame, .stat, .feat, .step, .faq details, .land-price { box-shadow: 4px 4px 0 rgba(0,0,0,.6); }
+    }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+    <header>
+        <div class="brand">
+            <div class="logo-box">M</div>
+            <span>MANZXY<b>MD</b></span>
+        </div>
+        <nav>
+            <a class="plain" href="#fitur">Fitur</a>
+            <a class="plain" href="#harga">Harga</a>
+            <a class="plain" href="#faq">FAQ</a>
+            <a class="plain" href="/docs">Docs</a>
+            <a class="primary" href="/panel">BUKA PANEL →</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Bot WhatsApp <em>multi device</em>,<br>dikelola dari browser.</h1>
+        <p>Bikin bot sendiri dalam hitungan menit, atau sewa bot untuk grupmu. Kode pairing tampil di layar, pembayaran QRIS, status bot dipantau realtime — tanpa perlu install apa pun.</p>
+        <div class="cta">
+            <a class="primary" href="/panel">MASUK KE PANEL →</a>
+            <a class="ghost" href="#harga">LIHAT HARGA</a>
+        </div>
+        <!--STATS-->
+    </section>
+
+    <section class="preview">
+        <div class="preview-frame">
+            <div class="preview-bar">
+                <span class="preview-dot"></span><span class="preview-dot"></span><span class="preview-dot"></span>
+                <span class="preview-url">panel · dashboard</span>
+            </div>
+            <div class="preview-body">
+                <div class="preview-side">
+                    <i class="on"></i><i></i><i></i><i></i><i></i><i></i>
+                </div>
+                <div class="preview-main">
+                    <div class="preview-kpis">
+                        <div class="preview-kpi"><b>Live</b><span>Status bot</span></div>
+                        <div class="preview-kpi"><b>QRIS</b><span>Pembayaran</span></div>
+                        <div class="preview-kpi"><b>24/7</b><span>Uptime</span></div>
+                    </div>
+                    <div class="preview-chart">
+                        <i style="height:34%"></i><i style="height:52%"></i><i style="height:41%"></i>
+                        <i style="height:68%"></i><i style="height:57%"></i><i style="height:79%"></i>
+                        <i style="height:63%"></i><i style="height:88%"></i><i style="height:72%"></i>
+                        <i style="height:95%"></i><i style="height:81%"></i><i style="height:100%"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p class="preview-note">Tampilan panel: monitor realtime, katalog command, sewa grup, dan laporan pendapatan.</p>
+    </section>
+
+    <section id="fitur">
+        <div class="sec-head">
+            <h2>Yang bisa kamu lakukan</h2>
+            <p>Semua dari satu panel web — tidak perlu command manual.</p>
+        </div>
+        <div class="feats">
+            <div class="feat"><div class="ico">🚀</div><h3>Jadibot instan</h3><p>Aktifkan bot untuk nomormu sendiri. Kode pairing muncul langsung di panel, tanpa menunggu pesan dari bot.</p></div>
+            <div class="feat"><div class="ico">🏷️</div><h3>Sewa bot ke grup</h3><p>Tempel link undangan grup, pilih paket, bayar QRIS. Bot masuk grup otomatis setelah pembayaran terverifikasi.<span class="tag">BARU</span></p></div>
+            <div class="feat"><div class="ico">⌨️</div><h3>Katalog command</h3><p>Semua perintah bot bisa dicari dan difilter per kategori, lengkap dengan status premium/owner/admin.<span class="tag">BARU</span></p></div>
+            <div class="feat"><div class="ico">💰</div><h3>Topup &amp; premium</h3><p>Bayar via QRIS — saldo masuk otomatis setelah pembayaran terverifikasi.</p></div>
+            <div class="feat"><div class="ico">📊</div><h3>Monitor realtime</h3><p>Status, uptime, dan masa aktif semua bot tampil live. Peringatan muncul sebelum masa aktif habis.</p></div>
+            <div class="feat"><div class="ico">🔐</div><h3>Login aman</h3><p>Email + password dengan OTP WhatsApp, 2FA authenticator, atau sekali klik lewat Google/GitHub.</p></div>
+            <div class="feat"><div class="ico">🎮</div><h3>RPG &amp; games</h3><p>Bukan sekadar bot utilitas — ada game, guild, dan season untuk grupmu.</p></div>
+            <div class="feat"><div class="ico">🧩</div><h3>Plugin lengkap</h3><p>Downloader, AI, tools grup, sticker, dan ratusan perintah siap pakai.</p></div>
+        </div>
+    </section>
+
+    <section>
+        <div class="sec-head">
+            <h2>Mulai dalam tiga langkah</h2>
+            <p>Dari daftar sampai bot jalan, semuanya di browser.</p>
+        </div>
+        <div class="steps">
+            <div class="step"><b class="num">1</b><h3>Daftar &amp; verifikasi</h3><p>Buat akun, verifikasi nomor WhatsApp lewat kode OTP. Selesai dalam satu menit.</p></div>
+            <div class="step"><b class="num">2</b><h3>Pilih layanan</h3><p>Jadibot untuk nomor sendiri, atau sewa bot untuk grup. Pilih paket durasi yang cocok.</p></div>
+            <div class="step"><b class="num">3</b><h3>Bayar &amp; aktif</h3><p>Scan QRIS. Sistem memverifikasi pembayaran lalu mengaktifkan layanan otomatis.</p></div>
+        </div>
+    </section>
+
+    <section class="prices" id="harga">
+        <div class="sec-head">
+            <h2>Harga</h2>
+            <p>Harga langsung dari pengaturan owner — aktif instan lewat panel.</p>
+        </div>
+        <div class="price-grid">
+            <div class="price-col">
+                <h3>Jadibot · nomor sendiri</h3>
+                <!--HARGA-->
+            </div>
+            <div class="price-col">
+                <h3>Sewa bot · grup WhatsApp</h3>
+                <!--HARGA-SEWA-->
+            </div>
+        </div>
+    </section>
+
+    <section id="faq">
+        <div class="sec-head">
+            <h2>Pertanyaan yang sering muncul</h2>
+        </div>
+        <div class="faq">
+            <details>
+                <summary>Apa bedanya jadibot dan sewa bot?</summary>
+                <p><b>Jadibot</b> menjalankan bot untuk nomor WhatsApp milikmu sendiri — kamu yang pegang nomornya. <b>Sewa bot</b> memasukkan bot yang sudah ada ke dalam grup WhatsApp kamu, tanpa perlu nomor tambahan. Keduanya diatur dari panel yang sama.</p>
+            </details>
+            <details>
+                <summary>Bagaimana cara bayarnya?</summary>
+                <p>Semua pembayaran lewat QRIS. Setelah kamu scan dan bayar, sistem mengecek status secara berkala dan mengaktifkan layanan otomatis — biasanya dalam hitungan detik sampai satu menit. Tidak perlu konfirmasi manual ke owner.</p>
+            </details>
+            <details>
+                <summary>Apakah bot harus jadi admin grup?</summary>
+                <p>Untuk fitur grup seperti welcome, anti-link, dan moderasi, ya — jadikan bot admin. Fitur dasar tetap jalan tanpa admin, tapi sebagian perintah akan menolak dieksekusi.</p>
+            </details>
+            <details>
+                <summary>Masa aktif habis, apa yang terjadi?</summary>
+                <p>Panel menampilkan peringatan beberapa hari sebelum habis. Kalau tidak diperpanjang, bot berhenti melayani dan (untuk sewa grup) keluar dari grup. Kamu bisa perpanjang kapan saja dari panel.</p>
+            </details>
+            <details>
+                <summary>Ada dokumentasi API?</summary>
+                <p>Ada. Endpoint API v1, webhook, dan widget embed dijelaskan di <a href="/docs">halaman dokumentasi</a>. Status layanan bisa dicek di <a href="/health">/health</a>.</p>
+            </details>
+            <details>
+                <summary>Bisa dipakai di HP?</summary>
+                <p>Bisa. Panel ini web app — buka di browser HP dan tambahkan ke Home Screen supaya terasa seperti aplikasi biasa.</p>
+            </details>
+        </div>
+    </section>
+
+    <section class="final">
+        <h2>Siap punya bot sendiri?</h2>
+        <p>Daftar gratis, bayar hanya saat kamu butuh layanannya.</p>
+        <div class="cta">
+            <a class="primary" href="/panel">MULAI SEKARANG →</a>
+            <a class="ghost" href="/docs">BACA DOKUMENTASI</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="links">
+            <a href="/panel">Panel</a>
+            <a href="/docs">Dokumentasi</a>
+            <a href="/health">Status layanan</a>
+        </div>
+        © ManzxyMD · Bot WhatsApp multi device
+    </footer>
+
+</div>
+</body>
+</html>

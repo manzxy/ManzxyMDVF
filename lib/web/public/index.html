@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ManzxyMD — Panel Jadibot</title>
+<meta name="theme-color" content="#FFE500">
+<script src="/panel/theme.js"></script>
+<link rel="stylesheet" href="/panel/css/base.css?v=8.11.1-9">
+<link rel="stylesheet" href="/panel/css/aurora.css">
+<link rel="stylesheet" href="/panel/css/shell.css">
+<link rel="manifest" href="/panel/manifest.webmanifest?v=8.11.1">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23FFE500'/><text y='72' x='50' font-size='64' text-anchor='middle' font-family='monospace' font-weight='bold'>M</text></svg>">
+</head>
+<body>
+
+<!-- ══════════ AUTH (login / register) ══════════ -->
+<div id="view-auth" class="view">
+  <div class="auth-wrap">
+    <div class="card auth-card">
+      <div class="brand-row">
+        <div class="logo-box">M</div>
+        <div>
+          <h1 class="logo-title">MANZXY<span>MD</span></h1>
+          <p class="logo-sub">WhatsApp Bot Control Panel</p>
+        </div>
+      </div>
+
+      <div class="auth-switch">
+        <button class="switch-btn active" id="tab-login" type="button">MASUK</button>
+        <button class="switch-btn" id="tab-register" type="button">DAFTAR</button>
+      </div>
+
+      <!-- ── LOGIN ── -->
+      <form id="form-login" autocomplete="on">
+        <label class="lbl" for="login-email">Email</label>
+        <input id="login-email" class="inp" type="email" placeholder="kamu@email.com" required autocomplete="email">
+
+        <label class="lbl" for="login-pass">Password</label>
+        <input id="login-pass" class="inp" type="password" placeholder="••••••••" required autocomplete="current-password">
+
+        <div id="login-2fa-wrap" class="hidden">
+          <label class="lbl" for="login-2fa">Kode 2FA <span class="opt">(6 angka dari authenticator)</span></label>
+          <input id="login-2fa" class="inp" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">
+        </div>
+
+        <button class="btn btn-primary btn-block mt-sm" type="submit" id="btn-login">MASUK <span class="ic">→</span></button>
+        <button class="btn btn-block hidden" type="button" id="btn-passkey-login"><span class="ic">🔑</span> MASUK DENGAN PASSKEY</button>
+        <button class="linklike" type="button" id="link-forgot">Lupa password?</button>
+      </form>
+
+      <!-- ── REGISTER ── -->
+      <form id="form-register" class="hidden" autocomplete="on">
+        <label class="lbl" for="reg-email">Email</label>
+        <input id="reg-email" class="inp" type="email" placeholder="kamu@email.com" required autocomplete="email">
+
+        <label class="lbl" for="reg-name">Nama tampilan <span class="opt">(opsional)</span></label>
+        <input id="reg-name" class="inp" type="text" placeholder="Manzxy" autocomplete="nickname">
+
+        <label class="lbl" for="reg-wa">Nomor WhatsApp <span class="opt">(wajib)</span></label>
+        <div class="otp-row">
+          <input id="reg-wa" class="inp" type="tel" placeholder="08xxxxxxxxxx" required autocomplete="tel" inputmode="numeric">
+          <button class="btn btn-sm otp-send" id="btn-send-otp" type="button">KIRIM OTP</button>
+        </div>
+        <p class="field-hint">Kode 6 angka dikirim ke WhatsApp nomor ini. Dipakai untuk jadibot, topup &amp; premium.</p>
+
+        <div id="reg-otp-wrap" class="hidden">
+          <label class="lbl" for="reg-otp">Kode OTP <span class="opt">(6 angka dari WhatsApp)</span></label>
+          <input id="reg-otp" class="inp" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">
+          <p class="field-hint" id="reg-otp-hint">Cek pesan WhatsApp dari bot.</p>
+        </div>
+
+        <label class="lbl" for="reg-ref">Kode referral <span class="opt">(opsional — dapat bonus saldo)</span></label>
+        <input id="reg-ref" class="inp" type="text" placeholder="cth: MANZXY7" autocomplete="off" style="text-transform:uppercase">
+        <p class="field-hint" id="reg-ref-hint">Punya kode dari teman? Isi di sini untuk dapat bonus saldo.</p>
+
+        <label class="lbl" for="reg-pass">Password</label>
+        <input id="reg-pass" class="inp" type="password" placeholder="min. 8 karakter, ada huruf &amp; angka" required autocomplete="new-password">
+
+        <label class="lbl" for="reg-pass2">Ulangi password</label>
+        <input id="reg-pass2" class="inp" type="password" placeholder="••••••••" required autocomplete="new-password">
+
+      <button class="btn btn-primary btn-block mt-sm" type="submit" id="btn-register">BUAT AKUN <span class="ic">→</span></button>
+      </form>
+
+      <!-- ── RESET PASSWORD (lupa password, verifikasi OTP WhatsApp) ── -->
+      <form id="form-reset" class="hidden" autocomplete="on">
+        <p class="field-hint" style="margin-bottom:8px">Masukkan nomor WhatsApp yang tertaut ke akunmu — kode verifikasi dikirim ke sana.</p>
+
+        <label class="lbl" for="reset-wa">Nomor WhatsApp akun</label>
+        <div class="otp-row">
+          <input id="reset-wa" class="inp" type="tel" placeholder="08xxxxxxxxxx" required autocomplete="tel" inputmode="numeric">
+          <button class="btn btn-sm otp-send" id="btn-send-reset-otp" type="button">KIRIM OTP</button>
+        </div>
+
+        <div id="reset-otp-wrap" class="hidden">
+          <label class="lbl" for="reset-otp">Kode OTP <span class="opt">(6 angka dari WhatsApp)</span></label>
+          <input id="reset-otp" class="inp" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">
+          <p class="field-hint" id="reset-otp-hint">Cek pesan WhatsApp dari bot.</p>
+        </div>
+
+        <label class="lbl" for="reset-pass">Password baru</label>
+        <input id="reset-pass" class="inp" type="password" placeholder="min. 8 karakter, ada huruf &amp; angka" required autocomplete="new-password">
+
+        <label class="lbl" for="reset-pass2">Ulangi password baru</label>
+        <input id="reset-pass2" class="inp" type="password" placeholder="••••••••" required autocomplete="new-password">
+
+        <button class="btn btn-primary btn-block mt-sm" type="submit" id="btn-reset">SIMPAN PASSWORD BARU <span class="ic">→</span></button>
+        <button class="linklike" type="button" id="link-back-login">← Kembali ke login</button>
+      </form>
+
+      <div class="or-divider"><span>ATAU</span></div>
+
+      <div class="oauth-row" id="oauth-row">
+        <a class="btn oauth-btn" href="/api/auth/google/start" id="btn-google">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg>
+          Google
+        </a>
+        <a class="btn oauth-btn" href="/api/auth/github/start" id="btn-github">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="#1a1a1a" d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.08 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.95 0-1.31.47-2.39 1.24-3.23-.12-.3-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.77.84 1.24 1.92 1.24 3.23 0 4.62-2.81 5.64-5.49 5.94.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58A12 12 0 0 0 24 12.5C24 5.87 18.63.5 12 .5z"/></svg>
+          GitHub
+        </a>
+      </div>
+
+      <div id="auth-error" class="alert alert-red hidden mt-sm"></div>
+      <div id="auth-ok" class="alert alert-green hidden mt-sm"></div>
+    </div>
+
+    <aside class="auth-side">
+      <div class="auth-side-head">
+        <span class="auth-side-kicker">ManzxyMD Panel</span>
+        <h2>Kelola bot WhatsApp<br>langsung dari browser.</h2>
+        <p>Tanpa buka VPS, tanpa edit file. Login sekali, semua terkendali.</p>
+      </div>
+      <ul class="auth-feats">
+        <li><span class="feat-ico">🚀</span><div><strong>Jadibot instan</strong><small>Kode pairing muncul di layar, tinggal masukkan di WhatsApp.</small></div></li>
+        <li><span class="feat-ico">💰</span><div><strong>Topup &amp; premium</strong><small>Bayar QRIS, saldo masuk otomatis setelah terverifikasi.</small></div></li>
+        <li><span class="feat-ico">📊</span><div><strong>Monitor live</strong><small>Status, uptime, dan masa aktif semua bot dalam satu tempat.</small></div></li>
+        <li><span class="feat-ico">🔐</span><div><strong>Login aman</strong><small>Email + password, OTP WhatsApp, 2FA, atau Google/GitHub.</small></div></li>
+      </ul>
+    </aside>
+  </div>
+</div>
+
+<!-- ══════════ APP ══════════ -->
+<div id="view-app" class="view hidden">
+
+<!-- Sprite ikon: satu definisi, dipakai berulang lewat <use>. Tajam di semua DPI,
+     tidak bergantung font emoji, dan tidak menambah request. -->
+<svg class="sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
+  <symbol id="i-pulse" viewBox="0 0 24 24"><path d="M3 12h4l2.5-7 4 14 2.5-7h5"/></symbol>
+  <symbol id="i-bot" viewBox="0 0 24 24"><rect x="4" y="8" width="16" height="12" rx="4"/><path d="M12 4v4"/><circle cx="9" cy="14" r="1.4"/><circle cx="15" cy="14" r="1.4"/></symbol>
+  <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 3.5l2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1L3.2 10l6.1-.9z"/></symbol>
+  <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="12" rx="2"/><path d="M3 13h18M12 9v12"/><path d="M12 9C10 9 8 8 8 6.2 8 5 9 4 10.2 4 12 4 12 6.5 12 9zM12 9c2 0 4-1 4-2.8C16 5 15 4 13.8 4 12 4 12 6.5 12 9z"/></symbol>
+  <symbol id="i-wallet" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/><circle cx="16.5" cy="14.5" r="1.2"/></symbol>
+  <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></symbol>
+  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"/><circle cx="7.5" cy="7.5" r="1.6"/></symbol>
+  <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9l3 3-3 3M13 15h4"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h5v18H6a2 2 0 0 1-2-2z"/><path d="M20 5a2 2 0 0 0-2-2h-5v18h5a2 2 0 0 0 2-2z"/></symbol>
+  <symbol id="i-crown" viewBox="0 0 24 24"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5z"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><rect x="10" y="10" width="4" height="4" rx="1"/><path d="M9 3v3M15 3v3M9 18v3M15 18v3M3 9h3M3 15h3M18 9h3M18 15h3"/></symbol>
+  <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></symbol>
+  <symbol id="i-log" viewBox="0 0 24 24"><path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5"/></symbol>
+  <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+  <symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5L19 19M19 5l-1.5 1.5M6.5 17.5L5 19"/></symbol>
+  <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8.5 8.5 0 019.5 4a8.5 8.5 0 1010.5 10.5z"/></symbol>
+  <symbol id="i-auto" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 3v18" /><path d="M12 3a9 9 0 010 18" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-out" viewBox="0 0 24 24"><path d="M15 4h4v16h-4"/><path d="M10 8l-4 4 4 4M6 12h9"/></symbol>
+  <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></symbol>
+</svg>
+
+<div class="app-shell">
+
+  <!-- ══════════ SIDEBAR (desktop) / DRAWER (mobile) ══════════ -->
+  <aside class="sidebar" id="sidebar" aria-label="Navigasi utama">
+
+    <div class="side-head">
+      <div class="side-id">
+        <div class="side-ava" id="side-ava">
+          <img id="side-ava-img" alt="Foto profil" class="hidden">
+          <span id="side-ava-ini">?</span>
+        </div>
+        <div class="side-id-text">
+          <strong id="hdr-bot">MANZXYMD</strong>
+          <span id="hdr-user" class="mono">-</span>
+          <div class="side-tags" id="side-tags"></div>
+        </div>
+      </div>
+      <button class="side-close" id="btn-side-close" type="button" aria-label="Tutup menu">
+        <svg class="nav-ic" aria-hidden="true"><use href="#i-close"/></svg>
+      </button>
+    </div>
+
+    <nav class="side-nav" id="side-nav">
+      <p class="side-label">UTAMA</p>
+      <button class="tab active" data-page="dashboard">
+        <svg class="nav-ic" aria-hidden="true"><use href="#i-grid"/></svg>
+        <span class="nav-label" data-i18n>DASHBOARD</span>
+      </button>
+      <button class="tab" data-page="monitor">
+        <svg class="nav-ic" aria-hidden="true"><use href="#i-pulse"/></svg>
+        <span class="nav-label" data-i18n>MONITOR</span>
+      </button>
+      <button class="tab" data-page="jadibot">
+        <svg class="nav-ic" aria-hidden="true"><use href="#i-bot"/></svg>
+        <span class="nav-label" data-i18n>JADIBOT</span>
+      </button>
+      <button class="tab" data-page="sewa">
+        <svg class="nav-ic" aria-hidden="true"><use href="#i-tag"/></svg>
+        <span class="nav-label">SEWA GRUP</span>
+      </button>
+      <button class="tab" data-page="commands">
+        <svg class="nav-ic" aria-hidden="true"><use href="#i-terminal"/></svg>
+        <span class="nav-label">KATALOG</span>
+      </button>
+
+      <p class="side-label">AKUN</p>
+      <button class="tab" data-page="premium">
+        <svg class="nav-ic" aria-hidden="true"><use href="#i-star"/></svg>
+        <span class="nav-label">PREMIUM</span>
+        <span class="nav-tag hidden" id="tag-premium">AKTIF</span>
+      </button>
+      <button class="tab" data-page="referral">
+        <svg class="nav-ic" aria-hidden="true"><use href="#i-gift"/></svg>
+        <span class="nav-label">REFERRAL</span>
+      </button>
+      <button class="tab" data-page="topup">
+        <svg class="nav-ic" aria-hidden="true"><use href="#i-wallet"/></svg>
+        <span class="nav-label" data-i18n>TOPUP SALDO</span>
+      </button>
+      <button class="tab" data-page="orders">
+        <svg class="nav-ic" aria-hidden="true"><use href="#i-receipt"/></svg>
+        <span class="nav-label" data-i18n>TRANSAKSI</span>
+        <span class="nav-tag nav-unread hidden" id="badge-orders">0</span>
+      </button>
+      <button class="tab" data-page="profile">
+        <svg class="nav-ic" aria-hidden="true"><use href="#i-user"/></svg>
+        <span class="nav-label" data-i18n>PROFIL</span>
+      </button>
+
+      <p class="side-label">BANTUAN</p>
+      <a class="tab tab-link" href="/docs" target="_blank" rel="noopener">
+        <svg class="nav-ic" aria-hidden="true"><use href="#i-book"/></svg>
+        <span class="nav-label">DOKUMENTASI</span>
+      </a>
+      <a class="tab tab-link" href="/health" target="_blank" rel="noopener">
+        <svg class="nav-ic" aria-hidden="true"><use href="#i-pulse"/></svg>
+        <span class="nav-label">STATUS LAYANAN</span>
+      </a>
+
+      <div id="side-admin" class="side-admin hidden">
+        <p class="side-label">ADMIN</p>
+        <button class="tab hidden" data-page="owner" id="tab-owner">
+          <svg class="nav-ic" aria-hidden="true"><use href="#i-crown"/></svg>
+          <span class="nav-label">OWNER</span>
+          <span class="nav-tag nav-tag-owner hidden" id="tag-owner-menu">ROOT</span>
+        </button>
+        <button class="tab hidden" data-page="system" id="tab-system">
+          <svg class="nav-ic" aria-hidden="true"><use href="#i-cpu"/></svg>
+          <span class="nav-label">SISTEM</span>
+        </button>
+        <button class="tab hidden" data-page="database" id="tab-database">
+          <svg class="nav-ic" aria-hidden="true"><use href="#i-db"/></svg>
+          <span class="nav-label">DATABASE</span>
+        </button>
+        <button class="tab hidden" data-page="logs" id="tab-logs">
+          <svg class="nav-ic" aria-hidden="true"><use href="#i-log"/></svg>
+          <span class="nav-label">LOG</span>
+        </button>
+      </div>
+    </nav>
+
+    <div class="side-foot">
+      <div class="balance-chip" id="balance-chip" title="Saldo">
+        <span class="dot"></span><span id="hdr-balance">Rp 0</span>
+      </div>
+      <div class="theme-switch" id="theme-switch" role="group" aria-label="Mode tampilan">
+        <button type="button" class="theme-opt" data-mode="light" title="Terang" aria-label="Tema terang">
+          <svg class="nav-ic" aria-hidden="true"><use href="#i-sun"/></svg>
+        </button>
+        <button type="button" class="theme-opt" data-mode="system" title="Ikuti sistem" aria-label="Tema mengikuti sistem">
+          <svg class="nav-ic" aria-hidden="true"><use href="#i-auto"/></svg>
+        </button>
+        <button type="button" class="theme-opt" data-mode="dark" title="Gelap" aria-label="Tema gelap">
+          <svg class="nav-ic" aria-hidden="true"><use href="#i-moon"/></svg>
+        </button>
+      </div>
+      <button class="btn btn-sm btn-ghost side-logout" id="btn-logout">
+        <svg class="nav-ic" aria-hidden="true"><use href="#i-out"/></svg>
+        <span>KELUAR</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="side-scrim" id="side-scrim" hidden></div>
+
+  <!-- ══════════ AREA KONTEN ══════════ -->
+  <div class="app-main">
+
+    <header class="topbar">
+      <button class="top-menu" id="btn-side-open" type="button" aria-label="Buka menu">
+        <svg class="nav-ic" aria-hidden="true"><use href="#i-menu"/></svg>
+      </button>
+      <div class="top-crumb">
+        <h1 id="page-crumb">Dashboard</h1>
+        <span id="page-sub" class="mono">-</span>
+      </div>
+      <div class="topbar-right">
+        <div class="top-tags" id="top-tags"></div>
+        <div class="balance-chip top-balance" id="balance-chip-top" title="Saldo">
+          <span class="dot"></span><span id="hdr-balance-top">Rp 0</span>
+        </div>
+        <button class="avatar-btn" id="btn-profile" title="Profil" aria-label="Buka profil">
+          <img id="hdr-avatar" alt="Foto profil" class="hidden">
+          <span id="hdr-initial">?</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- banner panic mode (tampil untuk semua user saat owner mengaktifkan kill switch) -->
+    <div id="panic-banner" class="panic-banner hidden" role="alert">🚨 <strong>MODE DARURAT</strong> — bot sedang dijeda owner. Pesan tidak dilayani sementara.</div>
+
+    <!-- banner masa aktif hampir habis (≤ 7 hari) -->
+    <div id="expire-banner" class="expire-banner hidden" role="status" aria-live="polite"></div>
+
+    <main class="content">
+
+    <!-- ─────── DASHBOARD ─────── -->
+    <section class="page" id="page-dashboard">
+      <div class="page-head">
+        <h2 class="page-title">Dashboard</h2>
+        <span class="welcome" id="dash-welcome"></span>
+      </div>
+
+      <div class="grid grid-4">
+        <div class="card stat">
+          <span class="stat-label">JADIBOT ONLINE</span>
+          <strong class="stat-value" id="st-online">0</strong>
+          <span class="stat-foot" id="st-total">dari 0 total</span>
+        </div>
+        <div class="card stat accent-yellow">
+          <span class="stat-label">MENUNGGU PAIRING</span>
+          <strong class="stat-value" id="st-pairing">0</strong>
+          <span class="stat-foot">ketik kode di WA</span>
+        </div>
+        <div class="card stat accent-pink">
+          <span class="stat-label">SLOT SERVER</span>
+          <strong class="stat-value" id="st-slots">0/0</strong>
+          <span class="stat-foot">terpakai / maks</span>
+        </div>
+        <div class="card stat accent-blue">
+          <span class="stat-label">UPTIME BOT</span>
+          <strong class="stat-value sm" id="st-uptime">-</strong>
+          <span class="stat-foot" id="st-traffic">0 pesan</span>
+        </div>
+      </div>
+
+      <div class="grid grid-2 mt">
+        <div class="card">
+          <h3 class="card-title">AKTIVITAS BOT</h3>
+          <div class="kv">
+            <div class="kv-row"><span>Total pesan diproses</span><strong id="kpi-messages">0</strong></div>
+            <div class="kv-row"><span>Total command dijalankan</span><strong id="kpi-commands">0</strong></div>
+            <div class="kv-row"><span>Pembayaran QRIS</span><strong id="kpi-pay">-</strong></div>
+            <div class="kv-row"><span>Akun web terdaftar</span><strong id="kpi-webacc">0</strong></div>
+          </div>
+        </div>
+
+        <div class="card card-yellow">
+          <h3 class="card-title">INFO AKUN</h3>
+          <div class="kv">
+            <div class="kv-row"><span>Nomor WhatsApp</span><strong id="kpi-number" class="mono">-</strong></div>
+            <div class="kv-row"><span>Status di bot</span><strong id="kpi-role">-</strong></div>
+            <div class="kv-row"><span>Premium</span><strong id="kpi-prem">-</strong></div>
+            <div class="kv-row"><span>Saldo</span><strong id="kpi-balance">Rp 0</strong></div>
+          </div>
+          <span class="free-chip hidden" id="free-chip">🆓 JADIBOT GRATIS — OWNER</span>
+          <div id="wa-warning" class="alert alert-red mt-sm hidden">
+            Nomor WhatsApp belum terhubung &amp; terverifikasi. <a href="#" data-goto="profile">Verifikasi di Profil →</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt" id="onboarding-card">
+        <div class="page-head">
+          <h3 class="card-title">🚀 <span data-i18n>MULAI CEPAT</span></h3>
+          <span class="muted small" id="onboarding-count">-</span>
+        </div>
+        <div id="onboarding-list" class="onboarding-list"></div>
+      </div>
+
+      <div class="card mt">
+        <div class="page-head">
+          <h3 class="card-title">📊 <span data-i18n>RINGKASAN HARI INI</span></h3>
+          <span class="muted small">dibanding kemarin</span>
+        </div>
+        <div class="grid grid-4 today-grid">
+          <div class="today-cell">
+            <span class="stat-label">PENDAPATAN</span>
+            <strong class="today-val" id="today-rev">Rp 0</strong>
+            <span class="stat-foot" id="today-rev-chg">-</span>
+          </div>
+          <div class="today-cell">
+            <span class="stat-label">COMMAND</span>
+            <strong class="today-val" id="today-cmd">0</strong>
+            <span class="stat-foot" id="today-cmd-chg">-</span>
+          </div>
+          <div class="today-cell">
+            <span class="stat-label">PESAN</span>
+            <strong class="today-val" id="today-msg">0</strong>
+            <span class="stat-foot" id="today-msg-chg">-</span>
+          </div>
+          <div class="today-cell">
+            <span class="stat-label">USER BARU</span>
+            <strong class="today-val" id="today-user">0</strong>
+            <span class="stat-foot" id="today-user-chg">-</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt">
+        <div class="page-head">
+          <h3 class="card-title">🟢 <span data-i18n>AKTIVITAS TERBARU</span></h3>
+          <span class="muted small" id="feed-live">● live</span>
+        </div>
+        <div id="activity-feed" class="activity-feed" aria-live="polite">
+          <p class="empty">Menunggu aktivitas…</p>
+        </div>
+      </div>
+
+      <div class="card mt">
+        <div class="page-head">
+          <h3 class="card-title"><span data-i18n>AKTIVITAS 24 JAM TERAKHIR</span></h3>
+          <span class="sys-legend"><span><span class="sw msg"></span>pesan</span><span><span class="sw cmd"></span>command</span></span>
+        </div>
+        <div class="sys-bars-wrap"><svg id="dash-bars" class="sys-bars" role="img" aria-label="Grafik pesan dan command per jam"></svg></div>
+        <div id="dash-traf-nodata" class="sys-nodata hidden">Belum ada aktivitas tercatat — grafik akan terisi seiring bot dipakai.</div>
+      </div>
+
+      <div class="card mt">
+        <div class="page-head">
+          <h3 class="card-title"><span data-i18n>HEATMAP 7 HARI</span></h3>
+          <span class="sys-legend"><span>sepi</span><span class="hm-scale"><i></i><i></i><i></i><i></i><i></i></span><span>ramai</span></span>
+        </div>
+        <div id="heatmap" class="heatmap" role="img" aria-label="Heatmap aktivitas 7 hari × 24 jam"></div>
+        <p class="field-hint">Baris = hari, kolom = jam (0–23). Makin terang, makin ramai. Klik kotak untuk detail.</p>
+      </div>
+
+      <div class="card mt">
+        <div class="page-head">
+          <h3 class="card-title">⌨️ <span data-i18n>COMMAND TERPOPULER</span></h3>
+          <span class="muted" id="cmd-total">-</span>
+        </div>
+        <div id="cmd-stats" class="cmd-stats"><p class="empty">Memuat…</p></div>
+      </div>
+
+      <div class="card mt">
+        <h3 class="card-title"><span data-i18n>JADIBOT TERBARU</span></h3>
+        <div id="dash-bots" class="mini-list"><p class="empty">Belum ada jadibot.</p></div>
+      </div>
+    </section>
+
+    <!-- ─────── SEWA GRUP ─────── -->
+    <section class="page hidden" id="page-sewa">
+      <div class="page-head">
+        <h2 class="page-title">🏷️ Sewa Grup</h2>
+        <div class="page-head-actions">
+          <button class="btn btn-sm" id="btn-refresh-sewa">⟳ REFRESH</button>
+        </div>
+      </div>
+
+      <div class="card card-blue">
+        <h3 class="card-title">BOT MASUK GRUP KAMU</h3>
+        <p class="muted small">Tempel link undangan grup, pilih paket, bayar QRIS. Bot langsung masuk grup setelah pembayaran terdeteksi — tanpa perlu chat owner.</p>
+        <div class="grid grid-3 mt-sm" id="sewa-stats">
+          <div class="kpi-mini"><span class="stat-label">SEWA AKTIF</span><strong class="stat-value sm" id="sw-active">0</strong></div>
+          <div class="kpi-mini"><span class="stat-label">HARGA / HARI</span><strong class="stat-value sm" id="sw-perday">-</strong></div>
+          <div class="kpi-mini"><span class="stat-label">DISKON</span><strong class="stat-value sm" id="sw-disc">-</strong></div>
+        </div>
+      </div>
+
+      <div class="grid grid-2 mt">
+        <div class="card">
+          <h3 class="card-title">SEWA BARU</h3>
+          <label class="lbl" for="sw-link">Link undangan grup</label>
+          <input class="inp" id="sw-link" type="url" placeholder="https://chat.whatsapp.com/…" spellcheck="false" autocomplete="off">
+          <p class="field-hint">Jadikan bot admin grup setelah masuk supaya semua fitur grup berjalan.</p>
+
+          <label class="lbl" for="sw-package">Paket durasi</label>
+          <select class="inp" id="sw-package"></select>
+
+          <label class="lbl" for="sw-days">Atau durasi custom (hari) <span class="opt">(harga Rp/hari)</span></label>
+          <input class="inp" id="sw-days" type="number" min="1" max="3650" placeholder="cth: 14" inputmode="numeric">
+          <p class="field-hint" id="sw-custom-hint">Kosongkan bila pakai paket di atas.</p>
+
+          <div class="price-row"><span>Total bayar</span><strong id="sw-price">-</strong></div>
+          <button class="btn btn-primary btn-block mt-sm" id="btn-sewa-qris">BUAT QRIS SEWA</button>
+          <div id="sw-result" class="mt-sm"></div>
+        </div>
+
+        <div class="card card-yellow">
+          <h3 class="card-title">TAGIHAN AKTIF</h3>
+          <div id="sw-qr-empty" class="empty-state">
+            <div class="qr-placeholder">QR</div>
+            <p class="muted small">Isi link grup &amp; pilih paket, lalu klik BUAT QRIS.</p>
+          </div>
+          <div id="sw-qr-active" class="hidden">
+            <div class="qr-box"><img id="sw-qr-img" alt="QRIS sewa grup"></div>
+            <div class="kv">
+              <div class="kv-row"><span>Grup</span><strong id="sw-qr-group">-</strong></div>
+              <div class="kv-row"><span>Total bayar</span><strong id="sw-qr-total">-</strong></div>
+              <div class="kv-row"><span>Status</span><strong id="sw-qr-status">-</strong></div>
+              <div class="kv-row"><span>ID</span><strong id="sw-qr-trx" class="mono small">-</strong></div>
+            </div>
+            <button class="btn btn-block mt-sm" id="btn-check-sewa-qr">CEK STATUS</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt">
+        <div class="page-head">
+          <h3 class="card-title">GRUP YANG MENYEWA</h3>
+          <span class="muted" id="sw-count">-</span>
+        </div>
+        <div id="sw-list" class="mini-list"><p class="empty">Memuat…</p></div>
+      </div>
+    </section>
+
+    <!-- ─────── KATALOG COMMAND ─────── -->
+    <section class="page hidden" id="page-commands">
+      <div class="page-head">
+        <h2 class="page-title">⌨️ Katalog Command</h2>
+        <div class="page-head-actions">
+          <input class="inp db-search" id="cmd-q" type="search" placeholder="Cari command…" aria-label="Cari command">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="page-head">
+          <h3 class="card-title">SEMUA COMMAND BOT</h3>
+          <span class="muted" id="cmd-catalog-total">-</span>
+        </div>
+        <div id="cmd-chips" class="cat-chips"></div>
+        <div id="cmd-catalog" class="cmd-catalog"><p class="empty">Memuat…</p></div>
+      </div>
+    </section>
+
+    <!-- ─────── MONITOR ─────── -->
+    <section class="page hidden" id="page-monitor">
+      <div class="page-head">
+        <h2 class="page-title" data-i18n>Monitor Jadibot</h2>
+        <div class="page-head-actions">
+          <input class="inp db-search" id="mon-q" type="search" placeholder="Cari nomor…" aria-label="Cari jadibot per nomor">
+          <button class="btn btn-sm" id="btn-refresh-monitor">⟳ REFRESH</button>
+        </div>
+      </div>
+
+      <div class="grid grid-3 mt-sm">
+        <div class="card mini-stat accent-green"><span class="dot-lg green"></span><div><strong id="mon-online">0</strong><small>ONLINE</small></div></div>
+        <div class="card mini-stat accent-yellow"><span class="dot-lg yellow"></span><div><strong id="mon-pairing">0</strong><small>PAIRING</small></div></div>
+        <div class="card mini-stat accent-red"><span class="dot-lg red"></span><div><strong id="mon-offline">0</strong><small>OFFLINE</small></div></div>
+      </div>
+
+      <div id="monitor-list" class="bot-grid mt">
+        <p class="empty">Memuat…</p>
+      </div>
+    </section>
+
+    <!-- ─────── JADIBOT ─────── -->
+    <section class="page hidden" id="page-jadibot">
+      <h2 class="page-title" data-i18n>Buat Jadibot</h2>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <h3 class="card-title">PAKAI SALDO</h3>
+          <p class="muted">Langsung aktif tanpa menunggu pembayaran.</p>
+
+          <label class="lbl">Nomor WhatsApp bot</label>
+          <input class="inp" id="jb-number-saldo" type="tel" placeholder="628123456789">
+
+          <label class="lbl">Durasi</label>
+          <select class="inp" id="jb-duration-saldo"></select>
+
+          <label class="lbl">Atau durasi custom (hari) <span class="opt">(harga Rp/hari)</span></label>
+          <input class="inp" id="jb-days-custom" type="number" min="1" max="3650" placeholder="cth: 45" inputmode="numeric">
+          <p class="field-hint" id="jb-custom-hint">Kosongkan bila pakai paket di atas.</p>
+
+          <div class="price-row"><span>Harga</span><strong id="jb-price">-</strong></div>
+          <div class="price-row"><span>Saldomu</span><strong id="jb-balance">Rp 0</strong></div>
+
+          <button class="btn btn-primary btn-block mt-sm" id="btn-buy-jadibot">BELI DENGAN SALDO</button>
+          <div id="buy-result" class="mt-sm"></div>
+        </div>
+
+        <div class="card card-blue">
+          <h3 class="card-title">HARGA JADIBOT</h3>
+          <div id="price-table" class="price-table"></div>
+          <div class="divider"></div>
+          <p class="muted small">
+            Belum punya saldo? Buka tab <strong>TOPUP SALDO</strong> untuk membayar via QRIS.
+          </p>
+        </div>
+      </div>
+
+      <div class="card mt card-yellow">
+        <h3 class="card-title">CARA MEMASANG KODE PAIRING</h3>
+        <ol class="steps">
+          <li>Klik tombol di atas — <strong>kode pairing muncul langsung di layar ini</strong> (tidak dikirim ke WhatsApp).</li>
+          <li>Di HP nomor bot: <strong>WhatsApp › ⋮ › Perangkat Tertaut</strong>.</li>
+          <li>Pilih <strong>Tautkan Perangkat › Tautkan dengan nomor telepon saja</strong>.</li>
+          <li>Masukkan kode dari layar. Status koneksi terpantau otomatis di sini.</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ─────── PREMIUM ─────── -->
+    <section class="page hidden" id="page-premium">
+      <div class="page-head">
+        <h2 class="page-title">⭐ Premium</h2>
+        <button class="btn btn-sm" id="btn-refresh-prem">⟳ REFRESH</button>
+      </div>
+
+      <div class="card card-yellow">
+        <h3 class="card-title">STATUS PREMIUM KAMU</h3>
+        <div class="kv">
+          <div class="kv-row"><span>Status</span><strong id="pm-status">-</strong></div>
+          <div class="kv-row"><span>Aktif sampai</span><strong id="pm-expire">-</strong></div>
+          <div class="kv-row"><span>Saldo</span><strong id="pm-balance">Rp 0</strong></div>
+        </div>
+        <p class="muted small mt-sm">Premium = limit harian <strong>unlimited</strong> + jadibot <strong>gratis</strong>.</p>
+      </div>
+
+      <div class="grid grid-2 mt">
+        <div class="card">
+          <h3 class="card-title">BELI PAKAI SALDO</h3>
+          <p class="muted small">Langsung aktif tanpa menunggu pembayaran.</p>
+          <p class="muted small hidden" id="pm-free-note"></p>
+
+          <label class="lbl">Paket durasi</label>
+          <select class="inp" id="pm-package"></select>
+
+          <label class="lbl">Atau durasi custom (hari) <span class="opt">(harga Rp/hari)</span></label>
+          <input class="inp" id="pm-days-custom" type="number" min="1" max="3650" placeholder="cth: 45" inputmode="numeric">
+          <p class="field-hint" id="pm-custom-hint">Kosongkan bila pakai paket di atas.</p>
+
+          <label class="lbl">Nomor penerima <span class="opt">(kosongkan = nomor kamu)</span></label>
+          <input class="inp" id="pm-target" type="tel" placeholder="08xxxxxxxxxx" inputmode="numeric">
+
+          <div class="price-row"><span>Harga</span><strong id="pm-price">-</strong></div>
+          <div class="price-row"><span>Saldomu</span><strong id="pm-mybalance">Rp 0</strong></div>
+
+          <button class="btn btn-primary btn-block mt-sm" id="btn-buy-prem">BELI PREMIUM</button>
+          <div id="pm-result" class="mt-sm"></div>
+        </div>
+
+        <div class="card card-blue">
+          <h3 class="card-title">BAYAR VIA QRIS</h3>
+          <p class="muted small">Aktif otomatis setelah pembayaran terdeteksi. Tidak perlu saldo.</p>
+
+          <div class="price-table mt-sm" id="pm-price-table"></div>
+
+          <div class="price-row"><span>Total bayar QRIS</span><strong id="pm-qris-amount">-</strong></div>
+          <button class="btn btn-block mt-sm" id="btn-buy-prem-qris">BUAT QRIS</button>
+
+          <div id="pm-qr-empty" class="empty-state mt-sm">
+            <div class="qr-placeholder">QR</div>
+            <p class="muted small">Pilih paket lalu klik BUAT QRIS.</p>
+          </div>
+
+          <div id="pm-qr-active" class="hidden mt-sm">
+            <div class="qr-box"><img id="pm-qr-img" alt="QRIS Premium"></div>
+            <div class="kv">
+              <div class="kv-row"><span>Total bayar</span><strong id="pm-qr-total">-</strong></div>
+              <div class="kv-row"><span>Status</span><strong id="pm-qr-status">-</strong></div>
+              <div class="kv-row"><span>ID</span><strong id="pm-qr-trx" class="mono small">-</strong></div>
+            </div>
+            <button class="btn btn-block mt-sm" id="btn-check-prem-qr">CEK STATUS</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card mt">
+        <div class="page-head">
+          <h3 class="card-title">💾 BACKUP SESI</h3>
+          <span class="muted">pindah VPS tanpa scan QR ulang</span>
+        </div>
+        <div class="grid grid-2">
+          <div>
+            <p class="muted">Unduh sesi jadibot milikmu sebagai file terenkripsi-format JSON.</p>
+            <button class="btn btn-block mt-sm" id="btn-sesi-export"><span class="ic">⬇</span> UNDUH SESIKU</button>
+          </div>
+          <div>
+            <p class="muted">Pulihkan dari file backup. Nomor tujuan = nomor WhatsApp akunmu.</p>
+            <input class="inp mt-sm" id="sesi-file" type="file" accept="application/json,.json" aria-label="File backup sesi">
+            <button class="btn btn-primary btn-block mt-sm" id="btn-sesi-import"><span class="ic">⬆</span> PULIHKAN &amp; NYALAKAN</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────── REFERRAL ─────── -->
+    <section class="page hidden" id="page-referral">
+      <div class="page-head">
+        <h2 class="page-title">🎁 Referral</h2>
+        <button class="btn btn-sm" id="btn-refresh-ref">⟳ REFRESH</button>
+      </div>
+
+      <div class="card card-yellow">
+        <h3 class="card-title">KODE REFERRAL KAMU</h3>
+        <div class="pm-code-box">
+          <span class="pm-code mono" id="ref-code">·······</span>
+          <button class="btn btn-sm" id="btn-ref-copy" type="button">SALIN</button>
+        </div>
+        <label class="lbl">Link undangan</label>
+        <div class="ref-link-box">
+          <span class="ref-link-text mono" id="ref-link">·······</span>
+          <button class="btn btn-sm" id="btn-ref-copylink" type="button">SALIN LINK</button>
+        </div>
+        <p class="field-hint">Bagikan kode/link ini. Temanmu dapat <strong id="ref-bonus-referee">Rp 1.000</strong> saldo, kamu dapat <strong id="ref-bonus-referrer">Rp 1.000</strong> setelah akunnya aktif.</p>
+      </div>
+
+      <div class="card mt">
+        <h3 class="card-title">🏆 LEADERBOARD REFERRAL</h3>
+        <p class="muted">Peringkat juragan undangan — berdasarkan bonus yang sudah cair.</p>
+        <div id="ref-leaderboard" class="lb-list mt-sm"><p class="empty">Memuat…</p></div>
+      </div>
+
+      <div class="grid grid-3 mt">
+        <div class="card stat accent-blue"><span class="stat-label">TOTAL DIUNDANG</span><strong class="stat-value" id="ref-total">0</strong><span class="stat-foot">akun</span></div>
+        <div class="card stat accent-yellow"><span class="stat-label">BONUS MASUK</span><strong class="stat-value sm" id="ref-paid">Rp 0</strong><span class="stat-foot">sudah dibayar</span></div>
+        <div class="card stat accent-pink"><span class="stat-label">SISA HARI INI</span><strong class="stat-value" id="ref-remain">0</strong><span class="stat-foot" id="ref-daily">batas harian</span></div>
+      </div>
+
+      <div class="card mt">
+        <h3 class="card-title">RIWAYAT UNDANGAN</h3>
+        <div id="ref-list" class="mini-list"><p class="empty">Belum ada undangan.</p></div>
+      </div>
+
+      <div class="card mt card-blue">
+        <h3 class="card-title">ATURAN</h3>
+        <ul class="steps">
+          <li><strong>Satu perangkat hanya 1 akun.</strong> Akun kedua dari HP yang sama tidak akan dapat bonus referral.</li>
+          <li>Nomor WhatsApp wajib terverifikasi lewat OTP.</li>
+          <li>Bonus masuk ke saldo WhatsApp masing-masing setelah pendaftar berhasil membuat akun.</li>
+          <li>Batas undangan berbayar per hari menjaga saldo tetap aman.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ─────── TOPUP ─────── -->
+    <section class="page hidden" id="page-topup">
+      <h2 class="page-title">Topup Saldo</h2>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <h3 class="card-title">PILIH PAKET</h3>
+          <div id="topup-packages" class="pack-grid"></div>
+
+          <div class="divider"></div>
+          <label class="lbl">Atau nominal sendiri</label>
+          <div class="custom-pay-row">
+            <input class="inp" id="topup-custom" type="number" min="1000" max="5000000" step="500" placeholder="min Rp 1.000" inputmode="numeric">
+            <button class="btn btn-primary" id="btn-topup-custom" type="button">BAYAR</button>
+          </div>
+          <p class="field-hint">Nominal bebas Rp 1.000 – Rp 5.000.000. Saldo masuk 1:1 tanpa bonus paket.</p>
+
+          <div id="topup-notice" class="alert alert-red hidden mt-sm"></div>
+
+          <div class="divider"></div>
+          <label class="lbl">🎟️ Punya kode voucher?</label>
+          <div class="custom-pay-row">
+            <input class="inp" id="voucher-code" type="text" maxlength="24" placeholder="KODE-VOUCHER" style="text-transform:uppercase">
+            <button class="btn btn-primary" id="btn-voucher" type="button">TUKAR</button>
+          </div>
+          <p class="field-hint">Saldo langsung masuk setelah kode ditukar.</p>
+        </div>
+
+        <div class="card card-yellow">
+          <h3 class="card-title">PEMBAYARAN QRIS</h3>
+          <div id="qr-empty" class="empty-state">
+            <div class="qr-placeholder">QR</div>
+            <p class="muted">Pilih paket untuk menampilkan QR pembayaran.</p>
+          </div>
+
+          <div id="qr-active" class="hidden">
+            <div class="qr-box"><img id="qr-img" alt="QRIS"></div>
+            <div class="kv mt-sm">
+              <div class="kv-row"><span>Total bayar</span><strong id="qr-amount">-</strong></div>
+              <div class="kv-row"><span>Saldo diterima</span><strong id="qr-credit">-</strong></div>
+              <div class="kv-row"><span>Status</span><strong id="qr-status">-</strong></div>
+              <div class="kv-row"><span>ID</span><strong id="qr-trx" class="mono small">-</strong></div>
+            </div>
+            <p class="muted small mt-sm">Bayar <strong>tepat</strong> sesuai nominal lewat aplikasi bank / e-wallet apa pun yang mendukung QRIS.</p>
+            <button class="btn btn-block mt-sm" id="btn-check-qr">CEK STATUS</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────── ORDERS ─────── -->
+    <section class="page hidden" id="page-orders">
+      <div class="page-head">
+        <h2 class="page-title" data-i18n>Riwayat Transaksi</h2>
+        <div class="page-head-actions">
+          <button class="btn btn-sm" id="btn-csv-orders" title="Unduh CSV"><span class="ic">⬇</span> CSV TRANSAKSI</button>
+          <button class="btn btn-sm" id="btn-csv-ledger" title="Unduh CSV"><span class="ic">⬇</span> CSV SALDO</button>
+        </div>
+      </div>
+
+      <div class="card mt-sm">
+        <h3 class="card-title">💰 RIWAYAT SALDO</h3>
+        <div id="ledger-list" class="mini-list"><p class="empty">Memuat…</p></div>
+      </div>
+
+      <div class="card mt">
+        <h3 class="card-title">🧾 TRANSAKSI</h3>
+        <div id="orders-list" class="orders"></div>
+      </div>
+    </section>
+
+    <!-- ─────── OWNER ─────── -->
+    <section class="page hidden" id="page-owner">
+      <div class="page-head">
+        <h2 class="page-title">👑 Panel Owner</h2>
+        <button class="btn btn-sm" id="btn-refresh-owner">⟳ REFRESH</button>
+      </div>
+
+      <!-- Pendapatan -->
+      <div class="card mt-sm" id="card-revenue">
+        <div class="page-head">
+          <h3 class="card-title">💰 PENDAPATAN</h3>
+          <span class="muted" id="rev-range">12 bulan terakhir</span>
+        </div>
+        <div class="grid grid-4" id="rev-stats">
+          <div class="kpi-mini"><span class="stat-label">BULAN INI</span><strong class="stat-value sm" id="rev-month">-</strong><span class="stat-foot" id="rev-month-sub">-</span></div>
+          <div class="kpi-mini"><span class="stat-label">BULAN LALU</span><strong class="stat-value sm" id="rev-last">-</strong><span class="stat-foot" id="rev-growth">-</span></div>
+          <div class="kpi-mini"><span class="stat-label">PROYEKSI BULAN INI</span><strong class="stat-value sm" id="rev-proj">-</strong><span class="stat-foot" id="rev-proj-sub">-</span></div>
+          <div class="kpi-mini"><span class="stat-label">TOTAL (LUNAS)</span><strong class="stat-value sm" id="rev-all">-</strong><span class="stat-foot" id="rev-all-sub">-</span></div>
+        </div>
+        <div class="sys-bars-wrap mt-sm"><svg id="rev-bars" class="sys-bars" role="img" aria-label="Grafik pendapatan 12 bulan"></svg></div>
+        <div id="rev-bytype" class="rev-bytype mt-sm"></div>
+      </div>
+
+      <!-- Slot & Paket -->
+      <div class="grid grid-2 mt-sm">
+        <div class="card">
+          <h3 class="card-title">SLOT JADIBOT DI SERVER</h3>
+          <div class="kv">
+            <div class="kv-row"><span>Terpakai</span><strong id="ad-slots-used">-</strong></div>
+            <div class="kv-row"><span>Terdaftar</span><strong id="ad-slots-reg">-</strong></div>
+            <div class="kv-row"><span>Online</span><strong id="ad-slots-online">-</strong></div>
+          </div>
+          <label class="lbl">Slot server (maks jadibot)</label>
+          <input class="inp" id="ad-max" type="number" min="0" max="500">
+          <label class="lbl">Slot per pengguna</label>
+          <input class="inp" id="ad-maxper" type="number" min="0" max="100">
+          <button class="btn btn-primary btn-block mt-sm" id="btn-save-slots">SIMPAN SLOT</button>
+          <p class="field-hint">Berlaku langsung tanpa restart bot — dipakai di web &amp; bot WA.</p>
+        </div>
+
+        <div class="card card-yellow">
+          <h3 class="card-title">PAKET DURASI SEWA JADIBOT</h3>
+          <p class="muted small">Paket ini yang muncul di halaman JADIBOT &amp; harga bot WA. Nama bebas, durasi dalam hari.</p>
+          <div id="ad-packages" class="pkg-list"></div>
+          <button class="btn btn-sm mt-sm" id="btn-add-pkg">+ TAMBAH PAKET</button>
+          <label class="lbl">Harga fleksibel per hari (di luar paket)</label>
+          <input class="inp" id="ad-perday" type="number" min="0">
+          <button class="btn btn-primary btn-block mt-sm" id="btn-save-pkg">SIMPAN PAKET</button>
+        </div>
+      </div>
+
+        <div class="card mt card-yellow">
+          <h3 class="card-title">DISKON &amp; PROMO GRATIS</h3>
+          <div class="kv">
+            <div class="kv-row"><span>Slot gratis terpakai</span><strong id="ad-free-usage">-</strong></div>
+          </div>
+          <label class="lbl" style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input type="checkbox" id="ad-free-on" style="width:auto"> Promo jadibot gratis aktif
+          </label>
+          <label class="lbl">Jumlah slot gratis</label>
+          <input class="inp" id="ad-free-slots" type="number" min="0" max="500">
+          <label class="lbl">Diskon jadibot (%)</label>
+          <input class="inp" id="ad-disc-jadibot" type="number" min="0" max="99">
+          <label class="lbl">Diskon sewa grup (%)</label>
+          <input class="inp" id="ad-disc-rent" type="number" min="0" max="99">
+          <label class="lbl">Diskon premium (%)</label>
+          <input class="inp" id="ad-disc-prem" type="number" min="0" max="99">
+          <button class="btn btn-primary btn-block mt-sm" id="btn-save-promo">SIMPAN DISKON</button>
+        </div>
+
+      <!-- Login OAuth & alamat panel -->
+      <div class="card mt" id="card-oauth">
+        <h3 class="card-title">🔐 LOGIN GOOGLE / GITHUB (DIATUR DARI WEB)</h3>
+        <p class="muted small">Isi Client ID &amp; Secret di sini — tidak perlu mengedit <span class="mono">.env</span> atau restart bot. Tombol login provider langsung aktif setelah disimpan.</p>
+
+        <label class="lbl">Alamat panel (base URL)</label>
+        <input class="inp" id="oa-base" type="url" placeholder="https://panel.manzxy.biz.id">
+        <p class="field-hint">Hanya domain — tanpa <span class="mono">/panel</span>. Dipakai untuk redirect OAuth &amp; link undangan.</p>
+
+        <div class="oa-grid mt-sm">
+          <div class="oa-prov">
+            <div class="oa-head">
+              <span class="oa-brand"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.27-4.74 3.27-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.84 14.1a6.6 6.6 0 0 1 0-4.2V7.06H2.18a11 11 0 0 0 0 9.88l3.66-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84C6.71 7.31 9.14 5.38 12 5.38z"/></svg> Google</span>
+              <span class="badge" id="oa-google-badge">-</span>
+            </div>
+            <label class="lbl" for="oa-google-id">Client ID</label>
+            <input class="inp" id="oa-google-id" type="text" placeholder="xxxx.apps.googleusercontent.com" autocomplete="off" spellcheck="false">
+            <label class="lbl" for="oa-google-secret">Client Secret</label>
+            <input class="inp" id="oa-google-secret" type="password" placeholder="••••••••" autocomplete="new-password">
+            <p class="field-hint">Redirect URI: <code class="mono" id="oa-google-uri">-</code></p>
+            <button class="btn btn-sm btn-block mt-sm" id="btn-save-google" type="button">SIMPAN GOOGLE</button>
+          </div>
+
+          <div class="oa-prov">
+            <div class="oa-head">
+              <span class="oa-brand"><svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="#1a1a1a" d="M12 .5C5.37.5 0 5.87 0 12.5c0 5.3 3.44 9.8 8.21 11.39.6.11.82-.26.82-.58v-2.03c-3.34.73-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.21.08 1.84 1.24 1.84 1.24 1.07 1.84 2.81 1.31 3.5 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.34-5.47-5.95 0-1.31.47-2.39 1.24-3.23-.12-.3-.54-1.53.12-3.18 0 0 1.01-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.77.84 1.24 1.92 1.24 3.23 0 4.62-2.81 5.64-5.49 5.94.43.37.81 1.1.81 2.22v3.29c0 .32.21.7.82.58A12 12 0 0 0 24 12.5C24 5.87 18.63.5 12 .5z"/></svg> GitHub</span>
+              <span class="badge" id="oa-github-badge">-</span>
+            </div>
+            <label class="lbl" for="oa-github-id">Client ID</label>
+            <input class="inp" id="oa-github-id" type="text" placeholder="Iv1.xxxxxxxxxxxx" autocomplete="off" spellcheck="false">
+            <label class="lbl" for="oa-github-secret">Client Secret</label>
+            <input class="inp" id="oa-github-secret" type="password" placeholder="••••••••" autocomplete="new-password">
+            <p class="field-hint">Callback URL: <code class="mono" id="oa-github-uri">-</code></p>
+            <button class="btn btn-sm btn-block mt-sm" id="btn-save-github" type="button">SIMPAN GITHUB</button>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="alert alert-yellow small" id="oa-hint">
+          Daftarkan redirect URI di atas pada <strong>Google Cloud Console</strong> / <strong>GitHub Developer Settings</strong>
+          agar provider menerima callback panel ini.
+        </div>
+        <div id="oa-msg" class="mt-sm"></div>
+      </div>
+
+      <!-- Statistik -->
+      <div class="card mt">
+        <h3 class="card-title">STATISTIK</h3>
+        <div class="grid grid-4">
+          <div class="stat"><span class="stat-label">USER BOT</span><strong class="stat-value" id="ad-st-users">0</strong></div>
+          <div class="stat accent-yellow"><span class="stat-label">PREMIUM</span><strong class="stat-value" id="ad-st-prem">0</strong></div>
+          <div class="stat accent-pink"><span class="stat-label">BANNED</span><strong class="stat-value" id="ad-st-banned">0</strong></div>
+          <div class="stat accent-blue"><span class="stat-label">TOTAL SALDO</span><strong class="stat-value sm" id="ad-st-balance">-</strong></div>
+        </div>
+      </div>
+
+      <!-- Kelola user bot -->
+      <div class="card mt">
+        <h3 class="card-title">KELOLA PENGGUNA BOT</h3>
+        <input class="inp" id="ad-user-q" type="text" placeholder="Cari nomor / nama…">
+        <div id="ad-users" class="admin-list mt-sm"><p class="empty">Memuat…</p></div>
+      </div>
+
+      <!-- Akun panel -->
+      <div class="card mt">
+        <h3 class="card-title">AKUN PANEL WEB</h3>
+        <div id="ad-accounts" class="admin-list"><p class="empty">Memuat…</p></div>
+      </div>
+
+      <!-- Log aktivitas -->
+      <div class="card mt">
+        <h3 class="card-title">LOG AKTIVITAS PANEL</h3>
+        <div id="ad-logs" class="log-list" style="max-height:320px"><p class="empty">Memuat…</p></div>
+      </div>
+
+      <!-- Laporan harian -->
+      <div class="card mt">
+        <h3 class="card-title">📬 LAPORAN HARIAN</h3>
+        <p class="muted">Setiap malam jam <span id="dr-hour">20</span>:00 bot kirim ringkasan (pesan, command terpopuler, topup, bot baru) ke WhatsApp root owner.</p>
+        <div id="dr-state" class="panic-state off">OFF</div>
+        <button class="btn btn-block mt-sm" id="btn-dr">AKTIFKAN LAPORAN HARIAN</button>
+      </div>
+
+      <!-- Broadcast -->
+      <div class="card mt">
+        <h3 class="card-title">📣 BROADCAST</h3>
+        <p class="muted">Kirim pesan ke semua user/grup dengan throttle 1,5 detik per pesan (anti-banned). Gunakan bijak.</p>
+        <label class="lbl">Target</label>
+        <select class="inp" id="bc-target">
+          <option value="users">Semua user</option>
+          <option value="groups">Semua grup</option>
+          <option value="all">User + grup</option>
+        </select>
+        <label class="lbl">Isi pesan — variabel: <code>{nama}</code> <code>{saldo}</code> <code>{tanggal}</code></label>
+        <textarea class="inp" id="bc-text" rows="4" maxlength="4000" placeholder="Halo {nama}, saldo kamu {saldo}…"></textarea>
+        <div id="bc-preview" class="bc-preview hidden"></div>
+        <label class="lbl">Jadwal (menit dari sekarang, 0 = langsung)</label>
+        <input class="inp" id="bc-delay" type="number" min="0" max="1440" value="0">
+        <div class="row-gap mt-10">
+          <button class="btn btn-primary btn-block" id="btn-bc-send"><span class="ic">📣</span> KIRIM</button>
+          <button class="btn btn-danger btn-block" id="btn-bc-cancel">BATALKAN</button>
+        </div>
+        <div id="bc-progress" class="mt-sm"></div>
+      </div>
+
+      <!-- Voucher topup -->
+      <div class="card mt">
+        <h3 class="card-title">🎟️ VOUCHER TOPUP</h3>
+        <p class="muted">Buat kode voucher yang bisa ditukar user jadi saldo — cocok untuk reseller offline.</p>
+        <div style="display:flex;gap:10px">
+          <input class="inp" id="v-code" type="text" maxlength="24" placeholder="KODE (min 4)" style="text-transform:uppercase">
+          <input class="inp" id="v-amount" type="number" min="1000" step="1000" placeholder="Nominal" style="max-width:130px">
+        </div>
+        <div class="row-gap mt-10">
+          <input class="inp" id="v-uses" type="number" min="1" max="999" value="1" title="Batas pemakaian" style="max-width:110px">
+          <input class="inp" id="v-days" type="number" min="0" max="365" value="0" title="Masa berlaku (hari, 0 = selamanya)" style="max-width:150px">
+          <button class="btn btn-primary btn-block" id="btn-v-add">BUAT VOUCHER</button>
+        </div>
+        <div id="v-list" class="session-list mt-sm"></div>
+      </div>
+
+      <!-- Backup database -->
+      <div class="card mt">
+        <h3 class="card-title">💾 BACKUP DATABASE</h3>
+        <p class="muted">Snapshot otomatis tiap 24 jam (disimpan 7 terakhir). Klik untuk snapshot &amp; unduh sekarang.</p>
+        <button class="btn btn-block" id="btn-backup-dl"><span class="ic">⬇</span> BUAT &amp; UNDUH BACKUP</button>
+        <div id="backup-list" class="session-list mt-sm"></div>
+      </div>
+
+      <!-- Panic mode (kill switch) -->
+      <div class="card mt">
+        <h3 class="card-title">🚨 PANIC MODE</h3>
+        <p class="muted">Kill switch: jeda SEMUA pesan masuk kecuali dari root owner. Untuk darurat (spam, bug, serangan) tanpa harus matikan bot.</p>
+        <div id="panic-state" class="panic-state off">OFF — bot normal</div>
+        <button class="btn btn-danger btn-block mt-sm" id="btn-panic">AKTIFKAN PANIC MODE</button>
+      </div>
+
+      <!-- Audit log + revert -->
+      <div class="card mt">
+        <div class="page-head">
+          <h3 class="card-title">🕰️ AUDIT PENGATURAN</h3>
+          <button class="btn btn-sm" id="btn-refresh-audit">⟳</button>
+        </div>
+        <p class="muted">Riwayat perubahan pengaturan (slot, harga, promo, saldo, panic). Perubahan berlabel ↱ bisa dikembalikan satu klik.</p>
+        <div id="audit-list" class="audit-list mt-sm"><p class="empty">Memuat…</p></div>
+      </div>
+    </section>
+
+    <!-- ─────── SISTEM (khusus owner, non-pribadi) ─────── -->
+    <section class="page hidden" id="page-system">
+      <div class="page-head">
+        <h2 class="page-title">💻 Sistem &amp; Server</h2>
+        <div class="page-head-actions">
+          <label class="sys-toggle">
+            <input type="checkbox" id="sys-auto">
+            <span>Auto 10s</span>
+          </label>
+          <button class="btn btn-sm" id="btn-refresh-sys" type="button">⟳ REFRESH</button>
+        </div>
+      </div>
+
+      <!-- ── hero: identitas mesin ── -->
+      <div class="sys-hero">
+        <div class="sys-hero-main">
+          <div class="sys-hero-env" id="sys-env">-</div>
+          <h3 class="sys-hero-os" id="sys-os">Memuat…</h3>
+          <p class="sys-hero-sub" id="sys-sub">-</p>
+        </div>
+        <div class="sys-hero-side">
+          <div class="sys-hero-stat"><span>UPTIME SERVER</span><strong id="sys-up-sys">-</strong></div>
+          <div class="sys-hero-stat"><span>UPTIME BOT</span><strong id="sys-up-bot">-</strong></div>
+        </div>
+      </div>
+
+      <!-- ── kartu ringkas: 4 metrik utama dengan meter ── -->
+      <div class="sys-cards">
+        <div class="sys-card">
+          <div class="sys-card-top">
+            <span class="sys-card-label">CPU LOAD</span>
+            <strong class="sys-card-value" id="sys-cpu-val">-</strong>
+          </div>
+          <div class="meter"><i id="sys-cpu-bar" style="width:0"></i></div>
+          <span class="sys-card-foot" id="sys-cpu-foot">-</span>
+        </div>
+        <div class="sys-card">
+          <div class="sys-card-top">
+            <span class="sys-card-label">RAM</span>
+            <strong class="sys-card-value" id="sys-ram-val">-</strong>
+          </div>
+          <div class="meter"><i id="sys-ram-bar" style="width:0"></i></div>
+          <span class="sys-card-foot" id="sys-ram-foot">-</span>
+        </div>
+        <div class="sys-card">
+          <div class="sys-card-top">
+            <span class="sys-card-label">DISK</span>
+            <strong class="sys-card-value" id="sys-disk-val">-</strong>
+          </div>
+          <div class="meter"><i id="sys-disk-bar" style="width:0"></i></div>
+          <span class="sys-card-foot" id="sys-disk-foot">-</span>
+        </div>
+        <div class="sys-card">
+          <div class="sys-card-top">
+            <span class="sys-card-label">SUHU CPU</span>
+            <strong class="sys-card-value" id="sys-temp-val">-</strong>
+          </div>
+          <div class="meter"><i id="sys-temp-bar" style="width:0"></i></div>
+          <span class="sys-card-foot" id="sys-temp-foot">-</span>
+        </div>
+      </div>
+
+      <!-- ── grafik riwayat ── -->
+      <div class="card mt">
+        <div class="sys-graph-head">
+          <h3 class="card-title">GRAFIK RIWAYAT</h3>
+          <div class="sys-range">
+            <button class="chip-btn active" data-range="15">15m</button>
+            <button class="chip-btn" data-range="60">1 jam</button>
+            <button class="chip-btn" data-range="240">4 jam</button>
+            <button class="chip-btn" data-range="0">semua</button>
+          </div>
+        </div>
+        <p class="muted small">Sampel tiap 15 detik. Grafik hanya menampilkan angka beban — bukan data pengguna.</p>
+
+        <div class="sys-graphs" id="sys-graphs">
+          <div class="sys-graph" data-metric="loadPct" data-unit="%" data-max="100" data-label="CPU LOAD">
+            <div class="sys-graph-top"><span>CPU LOAD</span><strong id="g-load-now">-</strong></div>
+            <svg class="spark" viewBox="0 0 320 70" preserveAspectRatio="none"></svg>
+            <div class="sys-graph-foot"><span>min <b id="g-load-min">-</b></span><span>max <b id="g-load-max">-</b></span><span>avg <b id="g-load-avg">-</b></span></div>
+          </div>
+
+          <div class="sys-graph" data-metric="memPct" data-unit="%" data-max="100" data-label="RAM">
+            <div class="sys-graph-top"><span>RAM</span><strong id="g-mem-now">-</strong></div>
+            <svg class="spark" viewBox="0 0 320 70" preserveAspectRatio="none"></svg>
+            <div class="sys-graph-foot"><span>min <b id="g-mem-min">-</b></span><span>max <b id="g-mem-max">-</b></span><span>avg <b id="g-mem-avg">-</b></span></div>
+          </div>
+
+          <div class="sys-graph" data-metric="botRssKB" data-unit="MB" data-div="1024" data-label="RAM BOT">
+            <div class="sys-graph-top"><span>RAM BOT (RSS)</span><strong id="g-rss-now">-</strong></div>
+            <svg class="spark" viewBox="0 0 320 70" preserveAspectRatio="none"></svg>
+            <div class="sys-graph-foot"><span>min <b id="g-rss-min">-</b></span><span>max <b id="g-rss-max">-</b></span><span>avg <b id="g-rss-avg">-</b></span></div>
+          </div>
+
+          <div class="sys-graph" data-metric="temp" data-unit="°C" data-label="SUHU CPU">
+            <div class="sys-graph-top"><span>SUHU CPU</span><strong id="g-temp-now">-</strong></div>
+            <svg class="spark" viewBox="0 0 320 70" preserveAspectRatio="none"></svg>
+            <div class="sys-graph-foot"><span>min <b id="g-temp-min">-</b></span><span>max <b id="g-temp-max">-</b></span><span>avg <b id="g-temp-avg">-</b></span></div>
+          </div>
+        </div>
+        <p class="sys-nodata hidden" id="sys-nodata">Belum ada cukup sampel. Biarkan panel terbuka — grafik terisi otomatis tiap 15 detik.</p>
+      </div>
+
+      <!-- ── trafik pesan & command per jam (agregat) ── -->
+      <div class="card mt">
+        <div class="sys-graph-head">
+          <h3 class="card-title">TRAFIK PESAN &amp; COMMAND</h3>
+          <div class="sys-range" id="sys-traf-range">
+            <button class="chip-btn active" data-hours="24">24 jam</button>
+            <button class="chip-btn" data-hours="48">48 jam</button>
+            <button class="chip-btn" data-hours="96">96 jam</button>
+          </div>
+        </div>
+        <p class="muted small">Jumlah pesan &amp; command per jam — hanya angka agregat, tanpa nomor atau isi pesan.</p>
+
+        <div class="sys-traf-totals">
+          <div class="sys-traf-total">
+            <span>PESAN (periode)</span><strong id="traf-msg-total">-</strong>
+          </div>
+          <div class="sys-traf-total">
+            <span>COMMAND (periode)</span><strong id="traf-cmd-total">-</strong>
+          </div>
+          <div class="sys-traf-total">
+            <span>PESAN (sepanjang masa)</span><strong id="traf-msg-all">-</strong>
+          </div>
+          <div class="sys-traf-total">
+            <span>COMMAND (sepanjang masa)</span><strong id="traf-cmd-all">-</strong>
+          </div>
+        </div>
+
+        <div class="sys-bars-wrap">
+          <svg class="sys-bars" id="sys-bars" viewBox="0 0 640 160" preserveAspectRatio="none"></svg>
+        </div>
+        <div class="sys-legend">
+          <span><i class="sw msg"></i> Pesan</span>
+          <span><i class="sw cmd"></i> Command</span>
+        </div>
+        <p class="sys-nodata hidden" id="traf-nodata">Belum ada trafik tercatat pada periode ini.</p>
+      </div>
+
+      <!-- ── detail spek ── -->
+      <div class="sys-detail-grid">
+        <div class="card">
+          <h3 class="card-title">⚙️ PROSESOR</h3>
+          <div class="kv">
+            <div class="kv-row"><span>Model</span><strong id="sys-cpu-model">-</strong></div>
+            <div class="kv-row"><span>Jumlah core</span><strong id="sys-cpu-core">-</strong></div>
+            <div class="kv-row"><span>Frekuensi</span><strong id="sys-cpu-mhz">-</strong></div>
+            <div class="kv-row"><span>Arsitektur</span><strong id="sys-cpu-arch">-</strong></div>
+            <div class="kv-row"><span>Load 1/5/15m</span><strong id="sys-cpu-load">-</strong></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">🧠 MEMORI</h3>
+          <div class="kv">
+            <div class="kv-row"><span>Total RAM</span><strong id="sys-ram-total">-</strong></div>
+            <div class="kv-row"><span>Terpakai</span><strong id="sys-ram-used">-</strong></div>
+            <div class="kv-row"><span>Tersedia</span><strong id="sys-ram-free">-</strong></div>
+            <div class="kv-row"><span>Bot (RSS)</span><strong id="sys-ram-bot">-</strong></div>
+            <div class="kv-row"><span>Heap Node</span><strong id="sys-ram-heap">-</strong></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">💾 PENYIMPANAN</h3>
+          <div id="sys-disks"><p class="empty">Memuat…</p></div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">🧩 RUNTIME</h3>
+          <div class="kv">
+            <div class="kv-row"><span>Node.js</span><strong id="sys-node">-</strong></div>
+            <div class="kv-row"><span>Platform</span><strong id="sys-platform">-</strong></div>
+            <div class="kv-row"><span>Arsitektur OS</span><strong id="sys-osarch">-</strong></div>
+            <div class="kv-row"><span>Port listen</span><strong id="sys-portcount">-</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <p class="sys-privacy" id="sys-privacy">
+        🔒 Halaman ini hanya menampilkan spesifikasi perangkat &amp; beban agregat.
+        Tidak ada data pengguna, nomor, email, IP, maupun path server yang ditampilkan.
+      </p>
+    </section>
+
+    <!-- ─────── DATABASE (khusus owner) ─────── -->
+    <section class="page hidden" id="page-database">
+      <div class="page-head">
+        <h2 class="page-title">🗄️ Isi Database Bot</h2>
+        <button class="btn btn-sm" id="btn-refresh-db">⟳ REFRESH</button>
+      </div>
+      <p class="muted small">Semua isi <span class="mono">database/db.json</span> • terakhir disimpan: <strong id="db-updated">-</strong> • total <strong id="db-totalkb">-</strong></p>
+
+      <div id="db-collections" class="db-grid mt-sm"><p class="empty">Memuat…</p></div>
+
+      <div class="card mt">
+        <div class="db-viewer-head">
+          <h3 class="card-title" id="db-viewer-title">PILIH KOLEKSI DI ATAS</h3>
+          <div class="db-tools">
+            <input class="inp db-search" id="db-search" type="text" placeholder="Cari di koleksi ini…">
+            <button class="btn btn-sm" id="btn-db-prev" title="Halaman sebelumnya">‹</button>
+            <span id="db-page-info" class="small db-pageinfo">-</span>
+            <button class="btn btn-sm" id="btn-db-next" title="Halaman berikutnya">›</button>
+            <button class="btn btn-sm" id="btn-db-raw">{ } JSON MENTAH</button>
+          </div>
+        </div>
+        <div id="db-items" class="db-items"><p class="empty">Pilih koleksi di atas untuk melihat isinya.</p></div>
+      </div>
+
+      <div class="card mt card-blue hidden" id="db-raw-card">
+        <h3 class="card-title">JSON MENTAH — <span id="db-raw-col"></span></h3>
+        <pre id="db-raw" class="db-raw">-</pre>
+        <button class="btn btn-sm btn-block mt-sm" id="btn-db-raw-close">TUTUP JSON</button>
+      </div>
+    </section>
+
+    <!-- ─────── PROFILE ─────── -->
+    <!-- ─────── LOGS (khusus owner) ─────── -->
+    <section class="page hidden" id="page-logs">
+      <div class="page-head">
+        <h2 class="page-title">📜 Live Log</h2>
+        <div class="page-head-actions">
+          <input class="inp" id="log-search" type="search" placeholder="Cari log…" aria-label="Cari log" style="max-width:160px">
+          <select class="inp" id="log-filter" aria-label="Filter level log">
+            <option value="all">Semua</option>
+            <option value="info">Info</option>
+            <option value="warn">Warn</option>
+            <option value="error">Error</option>
+          </select>
+          <button class="btn btn-sm" id="btn-log-pause"><span class="ic">⏸</span> JEDA</button>
+        </div>
+      </div>
+      <div class="card">
+        <div id="log-view" class="log-view mono" aria-live="off"><p class="empty">Menyambung ke aliran log…</p></div>
+        <div class="log-foot">
+          <span id="log-stat" class="muted">-</span>
+          <span class="muted">300 baris terakhir ditampilkan · aliran realtime</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="page hidden" id="page-profile">
+      <h2 class="page-title" data-i18n>Profil</h2>
+
+      <div class="grid grid-2">
+        <div class="card">
+          <div class="profile-head">
+            <div class="avatar-lg" id="pf-avatar-wrap">
+              <img id="pf-avatar" alt="Foto profil" class="hidden">
+              <span id="pf-initial">?</span>
+            </div>
+            <div>
+              <h3 class="profile-name" id="pf-name">-</h3>
+              <p class="profile-email" id="pf-email">-</p>
+              <div class="badges" id="pf-badges"></div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <label class="sys-toggle" for="pf-notif">
+            <input type="checkbox" id="pf-notif">
+            <span>🔔 Notifikasi browser <small class="muted">— beri tahu saat saldo masuk / bot terhubung, walau tab di background</small></span>
+          </label>
+
+          <label class="lbl">Bahasa / Language</label>
+          <select class="inp" id="pf-lang">
+            <option value="id">Bahasa Indonesia</option>
+            <option value="en">English</option>
+          </select>
+
+          <label class="lbl">Nama tampilan</label>
+          <input class="inp" id="pf-display" type="text" placeholder="Nama kamu">
+
+          <label class="lbl">Nomor WhatsApp</label>
+          <div class="otp-row">
+            <input class="inp" id="pf-wa" type="tel" placeholder="08xxxxxxxxxx" inputmode="numeric">
+            <button class="btn btn-sm otp-send" id="btn-pf-otp" type="button">KIRIM OTP</button>
+          </div>
+          <p class="field-hint" id="pf-wa-hint">Kode 6 angka dikirim ke WhatsApp nomor ini. Diperlukan untuk jadibot, topup &amp; premium. Kosongkan untuk melepas nomor.</p>
+
+          <div id="pf-otp-wrap" class="hidden">
+            <label class="lbl" for="pf-otp">Kode OTP <span class="opt">(6 angka dari WhatsApp)</span></label>
+            <input class="inp" id="pf-otp" type="text" inputmode="numeric" maxlength="6" placeholder="000000" autocomplete="one-time-code">
+          </div>
+
+          <label class="lbl">URL avatar <span class="opt">(opsional)</span></label>
+          <input class="inp" id="pf-avatarurl" type="url" placeholder="https://…">
+
+          <button class="btn btn-primary btn-block mt-sm" id="btn-save-profile">SIMPAN PROFIL</button>
+          <div id="profile-msg" class="mt-sm"></div>
+        </div>
+
+        <div class="card card-yellow">
+          <h3 class="card-title">KEAMANAN</h3>
+
+          <div id="pw-section">
+            <p class="muted small" id="pw-status">-</p>
+            <label class="lbl" id="pw-cur-label">Password saat ini</label>
+            <input class="inp" id="pw-current" type="password" placeholder="••••••••">
+
+            <label class="lbl">Password baru</label>
+            <input class="inp" id="pw-new" type="password" placeholder="min. 8 karakter, huruf &amp; angka">
+
+            <label class="lbl">Ulangi password baru</label>
+            <input class="inp" id="pw-new2" type="password" placeholder="••••••••">
+
+            <button class="btn btn-block mt-sm" id="btn-save-pw">SIMPAN PASSWORD</button>
+            <div id="pw-msg" class="mt-sm"></div>
+          </div>
+
+          <div class="divider"></div>
+
+          <h3 class="card-title">VERIFIKASI 2 LANGKAH (2FA)</h3>
+          <p class="muted small" id="tfa-status">-</p>
+
+          <div id="twofa-off">
+            <button class="btn btn-primary btn-block" id="btn-2fa-setup"><span class="ic">🔐</span> AKTIFKAN 2FA</button>
+          </div>
+
+          <div id="twofa-setup" class="hidden">
+            <div class="tfa-qr-wrap"><img id="tfa-qr" alt="QR 2FA" class="hidden"></div>
+            <p class="muted small">Scan pakai Google Authenticator / Authy, atau masukkan secret manual:</p>
+            <div class="tfa-secret mono" id="tfa-secret">-</div>
+            <a id="tfa-link" href="#" target="_blank" rel="noopener" class="muted small">Buka di aplikasi authenticator ↗</a>
+            <label class="lbl">Kode dari aplikasi (6 angka)</label>
+            <input class="inp" id="tfa-token" type="text" inputmode="numeric" maxlength="6" placeholder="000000">
+            <button class="btn btn-primary btn-block mt-sm" id="btn-2fa-enable">AKTIFKAN</button>
+          </div>
+
+          <div id="twofa-on" class="hidden">
+            <label class="lbl">Kode 2FA saat ini <span class="opt">(untuk konfirmasi matikan)</span></label>
+            <input class="inp" id="tfa-off-token" type="text" inputmode="numeric" maxlength="6" placeholder="000000">
+            <button class="btn btn-danger btn-block mt-sm" id="btn-2fa-disable">MATIKAN 2FA</button>
+          </div>
+
+          <div class="divider"></div>
+
+          <h3 class="card-title">💻 PERANGKAT LOGIN</h3>
+          <p class="muted">Semua sesi yang sedang masuk ke akunmu. Cabut yang tidak dikenal.</p>
+          <div id="pf-sessions" class="session-list mt-sm"><p class="empty">Memuat…</p></div>
+          <button class="btn btn-danger btn-block mt-sm" id="btn-sessions-all">KELUAR DARI SEMUA PERANGKAT LAIN</button>
+
+          <div class="divider"></div>
+
+          <h3 class="card-title">AKUN TERTAUT</h3>
+          <div id="pf-providers" class="provider-list"></div>
+
+          <div class="divider"></div>
+
+          <h3 class="card-title">🔑 PERSONAL API KEY</h3>
+          <p class="muted">Cek saldo &amp; status botmu lewat HTTP sederhana — pasang di bot cek-saldo, spreadsheet, atau skrip sendiri.</p>
+          <div class="ref-link-box mt-sm">
+            <span class="ref-link-text mono" id="pf-apikey">belum ada — buat dulu</span>
+            <button class="btn btn-sm" id="btn-apikey-copy" type="button" title="Salin key">SALIN</button>
+          </div>
+          <details class="api-doc mt-sm">
+            <summary>📘 Contoh pemakaian</summary>
+            <pre class="api-pre mono">curl "&lt;panel&gt;/api/v1/me?key=KEYMU"</pre>
+            <p class="field-hint">Balasan: nama, saldo, status premium, dan daftar botmu (online/offline).</p>
+          </details>
+          <div class="divider"></div>
+          <h3 class="card-title">🔐 PASSKEY</h3>
+          <p class="muted">Login pakai fingerprint / FaceID / Windows Hello — tanpa password. Butuh HTTPS atau localhost.</p>
+          <div id="pf-passkeys" class="session-list"></div>
+          <button class="btn btn-block mt-sm" id="btn-passkey-add" type="button">+ DAFTAR PASSKEY</button>
+
+          <div class="divider"></div>
+          <h3 class="card-title">🧩 WIDGET EMBED</h3>
+          <p class="muted">Tempel badge saldo/botmu di website, bio link, atau README GitHub.</p>
+          <div class="ref-link-box mt-sm">
+            <span class="ref-link-text mono" id="pf-widget-code">— buat API key dulu —</span>
+            <button class="btn btn-sm" id="btn-widget-copy" type="button" title="Salin kode embed">SALIN</button>
+          </div>
+          <div id="pf-widget-preview" class="mt-sm"></div>
+          <div class="row-gap mt-10">
+            <button class="btn btn-block" id="btn-apikey-gen">BUAT KEY</button>
+            <button class="btn btn-danger btn-block" id="btn-apikey-revoke">CABUT</button>
+          </div>
+
+          <div class="divider"></div>
+
+          <h3 class="card-title">🪝 WEBHOOK EVENT</h3>
+          <p class="muted">Panel kirim POST ke URL-mu saat ada event: saldo masuk, bot online/offline, sewa habis. Dokumentasi: <a href="/docs" target="_blank" rel="noopener">/docs</a></p>
+          <label class="lbl">URL webhook</label>
+          <input class="inp" id="wh-url" type="url" placeholder="https://servermu.com/hook">
+          <label class="lbl">Secret (opsional, untuk verifikasi HMAC)</label>
+          <input class="inp" id="wh-secret" type="text" placeholder="rahasia-mu" autocomplete="off">
+          <div class="wh-events mt-sm" id="wh-events"></div>
+          <div class="row-gap mt-10">
+            <button class="btn btn-block" id="btn-wh-save">SIMPAN</button>
+            <button class="btn btn-block" id="btn-wh-test">TES KIRIM</button>
+          </div>
+
+          <div class="divider"></div>
+          <h3 class="card-title">📢 NOTIFIKASI CHAT</h3>
+          <p class="muted">Kirim alert event (saldo masuk, bot online/offline) ke Telegram atau Discord-mu.</p>
+          <label class="lbl">Platform</label>
+          <select class="inp" id="cn-platform">
+            <option value="none">Tidak aktif</option>
+            <option value="telegram">Telegram</option>
+            <option value="discord">Discord</option>
+          </select>
+          <div id="cn-tg" class="hidden">
+            <label class="lbl">Bot token</label>
+            <input class="inp" id="cn-token" type="text" placeholder="123456:ABC-DEF…">
+            <label class="lbl">Chat ID</label>
+            <input class="inp" id="cn-chatid" type="text" placeholder="-1001234… (dari @userinfobot)">
+          </div>
+          <div id="cn-dc" class="hidden">
+            <label class="lbl">Webhook URL channel</label>
+            <input class="inp" id="cn-url" type="text" placeholder="https://discord.com/api/webhooks/…">
+          </div>
+          <div class="row-gap mt-10">
+            <button class="btn btn-primary btn-block" id="btn-cn-save">SIMPAN</button>
+            <button class="btn btn-block" id="btn-cn-test">TES</button>
+          </div>
+
+          <div class="divider"></div>
+
+          <h3 class="card-title">👥 SUB-AKUN (MODE PANTAU)</h3>
+          <p class="muted">Buat akun untuk staf/reseller: bisa lihat monitor botmu, tidak bisa membeli/mengubah apa pun (maks 3).</p>
+          <div id="pf-subs" class="session-list mt-sm"><p class="empty">Memuat…</p></div>
+          <label class="lbl mt-sm">Email sub-akun baru</label>
+          <input class="inp" id="sub-email" type="email" placeholder="staf@contoh.com">
+          <label class="lbl">Password awal</label>
+          <input class="inp" id="sub-pass" type="text" placeholder="min. 8 karakter" autocomplete="off">
+          <button class="btn btn-block mt-sm" id="btn-sub-add">BUAT SUB-AKUN</button>
+
+          <div class="divider"></div>
+
+          <h3 class="card-title">AKTIVITAS TERAKHIR</h3>
+          <div id="pf-logs" class="log-list"><p class="empty">Belum ada aktivitas.</p></div>
+
+          <div class="divider"></div>
+
+          <button class="btn btn-danger btn-block" id="btn-delete-account">HAPUS AKUN</button>
+        </div>
+      </div>
+    </section>
+
+    </main>
+
+  <!-- ══════════ BOTTOM NAV (mobile) ══════════ -->
+  <nav class="bottom-nav" id="bottom-nav" aria-label="Navigasi cepat">
+    <button class="tab active" data-page="dashboard">
+      <svg class="nav-ic" aria-hidden="true"><use href="#i-grid"/></svg>
+      <span class="nav-label">Beranda</span>
+    </button>
+    <button class="tab" data-page="jadibot">
+      <svg class="nav-ic" aria-hidden="true"><use href="#i-bot"/></svg>
+      <span class="nav-label">Jadibot</span>
+    </button>
+    <button class="tab" data-page="topup">
+      <svg class="nav-ic" aria-hidden="true"><use href="#i-wallet"/></svg>
+      <span class="nav-label">Topup</span>
+    </button>
+    <button class="tab" data-page="orders">
+      <svg class="nav-ic" aria-hidden="true"><use href="#i-receipt"/></svg>
+      <span class="nav-label">Transaksi</span>
+    </button>
+    <button class="tab" data-page="profile">
+      <svg class="nav-ic" aria-hidden="true"><use href="#i-user"/></svg>
+      <span class="nav-label">Profil</span>
+    </button>
+    <button class="nav-btn bottom-more" id="btn-side-open-2" type="button" aria-label="Menu lainnya">
+      <svg class="nav-ic" aria-hidden="true"><use href="#i-more"/></svg>
+      <span class="nav-label">Lainnya</span>
+    </button>
+  </nav>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="footer-brand-text">
+          <strong id="ft-bot">ManzxyMD</strong>
+          <span>WhatsApp Bot Panel • <span id="ft-version">v8.11.1</span></span>
+        </div>
+      </div>
+
+      <div class="footer-meta">
+        <span class="footer-pill"><span class="dot"></span>Server Online</span>
+        <span class="footer-copy">© <span id="ft-year">2026</span> Manzxy — All rights reserved</span>
+      </div>
+    </div>
+  </footer>
+
+  </div><!-- /app-main -->
+</div><!-- /app-shell -->
+
+<div id="modal-botset" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Pengaturan bot">
+  <div class="modal card" style="max-height:86vh;overflow-y:auto">
+    <h3 class="card-title" id="bs-title">⚙ PENGATURAN BOT</h3>
+
+    <label class="lbl">🤖 Auto-reply</label>
+    <label class="sys-toggle"><input type="checkbox" id="bs-ar-on"><span>Aktifkan auto-reply (balasan otomatis, bukan command)</span></label>
+    <div id="bs-rules" class="mt-sm"></div>
+    <button class="btn btn-sm mt-sm" id="bs-ar-add" type="button">+ TAMBAH ATURAN</button>
+    <label class="lbl mt-sm">Balasan cadangan (kalau tidak ada aturan yang cocok, boleh kosong)</label>
+    <textarea class="inp" id="bs-ar-fallback" rows="2" maxlength="1000"></textarea>
+
+    <div class="divider"></div>
+
+    <label class="lbl">⏰ Pesan terjadwal</label>
+    <div id="bs-sched" class="event-list"></div>
+    <label class="lbl mt-sm">Tambah jadwal</label>
+    <input class="inp" id="bs-s-jid" type="text" placeholder="628xxx@s.whatsapp.net atau 1203xxx@g.us">
+    <textarea class="inp mt-sm" id="bs-s-text" rows="2" maxlength="4000" placeholder="Isi pesan…"></textarea>
+    <div class="row-gap mt-10">
+      <input class="inp" id="bs-s-at" type="datetime-local" style="flex:1">
+      <select class="inp" id="bs-s-repeat" style="max-width:130px">
+        <option value="none">Sekali</option>
+        <option value="daily">Harian</option>
+      </select>
+    </div>
+    <button class="btn btn-primary btn-block mt-sm" id="bs-s-add" type="button"><span class="ic">⏰</span> JADWALKAN</button>
+
+    <div class="divider"></div>
+
+    <label class="lbl">👥 ADMIN BOT</label>
+    <p class="field-hint">Admin (maks 3) bisa pakai bot seperti pemilik &amp; mengelolanya dari panel.</p>
+    <div id="bs-admins" class="event-list"></div>
+    <div style="display:flex;gap:10px;margin-top:8px">
+      <input class="inp" id="bs-adm-add" type="text" inputmode="numeric" placeholder="628xxx" style="flex:1">
+      <button class="btn btn-sm" id="bs-adm-btn" type="button">+ TAMBAH</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <label class="lbl">📝 MENU &amp; SAMBUTAN KUSTOM</label>
+    <p class="field-hint">Kosongkan untuk memakai bawaan bot.</p>
+    <label class="lbl">Menu (balasan .menu)</label>
+    <textarea class="inp" id="bs-menu" rows="4" maxlength="4000" placeholder="Halo! Ini bot kustom…&#10;• .ping — cek bot"></textarea>
+    <label class="lbl mt-sm">Sambutan (saat bot online pertama kali)</label>
+    <textarea class="inp" id="bs-welcome" rows="2" maxlength="2000" placeholder="🎉 Bot siap digunakan!"></textarea>
+    <button class="btn btn-block mt-sm" id="bs-text-save" type="button"><span class="ic">💾</span> SIMPAN MENU &amp; SAMBUTAN</button>
+
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="btn btn-primary btn-block" id="bs-save" type="button"><span class="ic">💾</span> SIMPAN AUTO-REPLY</button>
+      <button class="btn" id="bs-close" type="button">TUTUP</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-events" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Riwayat kejadian bot">
+  <div class="modal card">
+    <h3 class="card-title" id="ev-title">⏱ RIWAYAT BOT</h3>
+    <div id="ev-stats" class="ev-stats"></div>
+    <div id="ev-list" class="event-list"><p class="empty">Memuat…</p></div>
+    <button class="btn btn-block mt-sm" id="ev-close" type="button">TUTUP</button>
+  </div>
+</div>
+
+<div id="tour" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Tur pertama">
+  <div class="modal card tour-card">
+    <div class="tour-ico" id="tour-ico">👋</div>
+    <h3 class="card-title" id="tour-title">SELAMAT DATANG</h3>
+    <p id="tour-text" style="font-weight:600;font-size:14px">-</p>
+    <div id="tour-progress" class="tour-progress" aria-hidden="true"></div>
+    <div class="row-gap mt-16">
+      <button class="btn btn-block" id="tour-skip" type="button">LEWATI</button>
+      <button class="btn btn-primary btn-block" id="tour-next" type="button">LANJUT <span class="ic">→</span></button>
+    </div>
+  </div>
+</div>
+
+<div id="palette" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Command palette">
+  <div class="palette card">
+    <input class="inp palette-in" id="palette-in" type="text" placeholder="Ketik perintah atau halaman… (Esc tutup)" autocomplete="off" spellcheck="false">
+    <div id="palette-list" class="palette-list" role="listbox"></div>
+    <div class="palette-foot">
+      <span><kbd>↑↓</kbd> pilih</span><span><kbd>↵</kbd> jalankan</span><span><kbd>Esc</kbd> tutup</span><span><kbd>Ctrl</kbd>+<kbd>K</kbd> buka kapan saja</span>
+    </div>
+  </div>
+</div>
+
+<div id="modal-confirm" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-labelledby="cf-title">
+  <div class="modal card">
+    <h3 class="card-title" id="cf-title">KONFIRMASI</h3>
+    <p id="cf-msg" style="font-weight:600;font-size:14px">-</p>
+    <div class="row-gap mt-16">
+      <button class="btn btn-block" id="cf-no" type="button">BATAL</button>
+      <button class="btn btn-primary btn-block" id="cf-yes" type="button">YA, LANJUT</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-pairing" class="modal-backdrop hidden" role="dialog" aria-modal="true" aria-label="Kode pairing">
+  <div class="modal card">
+    <h3 class="card-title">🔑 KODE PAIRING</h3>
+    <p class="muted small">Masukkan kode ini di nomor <strong id="pm-number" class="mono">-</strong></p>
+
+    <div class="pm-code-box">
+      <span class="pm-code mono" id="pm-code">········</span>
+      <button class="btn btn-sm" data-act="copy-code" type="button">SALIN</button>
+    </div>
+
+    <p class="pm-status waiting" id="pair-status">Menunggu…</p>
+
+    <ol class="steps" id="pm-steps">
+      <li>Di HP nomor bot: <strong>WhatsApp › ⋮ › Perangkat Tertaut</strong>.</li>
+      <li>Pilih <strong>Tautkan Perangkat › Tautkan dengan nomor telepon saja</strong>.</li>
+      <li>Masukkan kode di atas. Halaman ini otomatis mendeteksi koneksi.</li>
+    </ol>
+
+    <div id="pm-done" class="alert alert-green hidden">✅ Bot terhubung! Tutup jendela ini.</div>
+
+    <button class="btn btn-block mt-sm" data-act="close-modal" type="button">TUTUP</button>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+<script src="/panel/app.js?v=8.11.1-9"></script>
+</body>
+</html>

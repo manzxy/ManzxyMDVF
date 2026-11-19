@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dokumentasi API — ManzxyMD</title>
+<style>
+    :root { --ink: #16161a; --cream: #FBF7EC; --accent: #F5E27A; --muted: #63636e; --line: rgba(22,22,26,.16); --pink: #C2185B; }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+        background: var(--cream); color: var(--ink); padding: 40px 16px 80px; line-height: 1.65;
+    }
+    .wrap { max-width: 860px; margin: 0 auto; }
+    h1 { font-size: 30px; letter-spacing: -1px; border-bottom: 3px solid var(--ink); display: inline-block; padding-bottom: 4px; }
+    .lead { font-family: system-ui, sans-serif; font-size: 14px; font-weight: 600; color: var(--muted); margin: 12px 0 24px; max-width: 680px; }
+    h2 { font-size: 18px; margin: 34px 0 10px; background: var(--accent); display: inline-block; padding: 2px 10px; border: 2.5px solid var(--ink); color: var(--ink); }
+    h3 { font-size: 14px; margin: 22px 0 8px; letter-spacing: .5px; }
+    .ep { border: 2.5px solid var(--ink); background: #fff; padding: 14px 16px; margin-bottom: 14px; box-shadow: 4px 4px 0 var(--ink); }
+    .method { display: inline-block; font-weight: 900; font-size: 11px; padding: 2px 8px; border: 2px solid var(--ink); margin-right: 8px; color: var(--ink); }
+    .method.get { background: #CDEBD2; } .method.post { background: #F2C9C9; }
+    .path { font-weight: 800; font-size: 14px; }
+    .desc { font-family: system-ui, sans-serif; font-size: 13px; font-weight: 600; color: var(--muted); margin: 8px 0; }
+    pre {
+        background: #23232B; color: #E8E6D9; padding: 10px 14px; font-size: 12px;
+        overflow-x: auto; margin-top: 8px; white-space: pre;
+    }
+    /* tabel lebar: scroll di dalam wrapper, bukan di halaman (mobile) */
+    .tbl-scroll { overflow-x: auto; margin-top: 8px; -webkit-overflow-scrolling: touch; }
+    .tbl-scroll table { margin-top: 0; }
+    /* isyarat bisa digeser: tepi kanan memudar hanya pada tabel yang memang terpotong.
+       Tabel overflow diberi min-width supaya bisa dideteksi CSS, bukan di semua tabel. */
+    @media (max-width: 767px) {
+        .tbl-scroll { scrollbar-width: thin; }
+        .tbl-scroll:has(table[data-wide]) {
+            mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent 100%);
+            -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent 100%);
+        }
+    }
+    table { border-collapse: collapse; width: 100%; font-size: 12.5px; margin-top: 8px; }
+    th, td { border: 2px solid var(--ink); padding: 6px 10px; text-align: left; font-family: system-ui, sans-serif; }
+    th { background: var(--accent); color: var(--ink); }
+    td code { font-size: 11.5px; }
+    code { background: #F1ECDC; border: 1px solid var(--line); padding: 1px 5px; font-weight: 700; color: var(--ink); }
+    a { color: var(--pink); font-weight: 800; }
+    .auth-badge { display: inline-block; font-size: 10px; font-weight: 900; padding: 1px 7px; border: 2px solid var(--ink); margin-left: 6px; vertical-align: middle; color: var(--ink); }
+    .b-key { background: #F5E27A; } .b-sesi { background: #C9DFF2; } .b-owner { background: #F2C1C1; } .b-pub { background: #CDEBD2; }
+    .toc { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 6px; }
+    .toc a { font-size: 12px; border: 2px solid var(--ink); background: #fff; color: var(--ink); padding: 3px 10px; text-decoration: none; box-shadow: 2px 2px 0 var(--ink); }
+    .toc a:active { transform: translate(2px, 2px); box-shadow: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+    <h1>DOKUMENTASI API</h1>
+    <p class="lead">Referensi lengkap seluruh endpoint ManzxyMD — API publik v1 untuk pengguna, sampai endpoint internal panel. <a href="/panel">← Kembali ke panel</a></p>
+
+    <nav class="toc">
+        <a href="#v1">Publik v1</a>
+        <a href="#webhook">Webhook</a>
+        <a href="#widget">Widget</a>
+        <a href="#auth">Auth</a>
+        <a href="#profil">Profil</a>
+        <a href="#jadibot">Jadibot</a>
+        <a href="#transaksi">Transaksi</a>
+        <a href="#referral">Referral</a>
+        <a href="#data">Data</a>
+        <a href="#owner">Owner</a>
+        <a href="#error">Error</a>
+    </nav>
+
+    <h2 id="v1">API PUBLIK v1</h2>
+    <div class="ep">
+        <span class="desc">Endpoint untuk pengguna umum — pasang di bot cek-saldo, spreadsheet, n8n/Zapier, atau skrip sendiri. Buat key di <strong>panel → Profil → Personal API Key</strong>. Batas <code>60 permintaan/menit</code> per key.</span>
+        <pre>curl "https://host/api/v1/me?key=KEYMU"</pre>
+    </div>
+
+    <div class="ep">
+        <span class="method get">GET</span><span class="path">/api/v1/me</span>
+        <p class="desc">Profil ringkas: nama, saldo, status premium, dan daftar botmu.</p>
+        <pre>{
+  "name": "Budi",
+  "balance": 50000,
+  "balanceText": "Rp50.000",
+  "premium": false,
+  "premiumUntil": null,
+  "bots": [{ "number": "628xxx", "connected": true, "state": "open" }],
+  "botsOnline": 1
+}</pre>
+    </div>
+
+    <div class="ep">
+        <span class="method get">GET</span><span class="path">/api/v1/bots</span>
+        <p class="desc">Daftar jadibot milikmu + skor kesehatan. Tambah <code>&amp;number=628xxx</code> untuk detail satu bot beserta 10 kejadian terakhirnya.</p>
+        <pre>{
+  "bots": [{
+    "number": "628xxx",
+    "connected": true,
+    "state": "open",
+    "health": { "score": 95, "label": "SEHAT" },
+    "expireText": "12 Des 2026",
+    "selfMode": true
+  }],
+  "online": 1
+}</pre>
+    </div>
+
+    <div class="ep">
+        <span class="method get">GET</span><span class="path">/api/v1/ledger</span>
+        <p class="desc">20 perubahan saldo terakhir (topup, sewa, bonus referral, dll).</p>
+        <pre>{
+  "rows": [{
+    "kind": "topup",
+    "amount": 50000,
+    "balanceAfter": 50000,
+    "note": "Topup QRIS",
+    "at": "2026-11-09T07:00:00.000Z"
+  }]
+}</pre>
+    </div>
+
+    <h2 id="webhook">WEBHOOK</h2>
+    <div class="ep">
+        <span class="desc">Daftarkan URL webhook di <strong>panel → Profil → Webhook Event</strong>. Setiap request dikirim dengan header <code>X-Manzxy-Signature: sha256=&lt;hmac&gt;</code> — HMAC-SHA256 dari body mentah memakai secret-mu. Contoh verifikasi (Node.js):</span>
+        <pre>const crypto = require('crypto');
+const valid = 'sha256=' + crypto.createHmac('sha256', SECRET).update(rawBody).digest('hex');
+if (req.headers['x-manzxy-signature'] !== valid) return res.status(401).end();</pre>
+        <div class="tbl-scroll"><table>
+            <tr><th>Event</th><th>Dikirim saat</th></tr>
+            <tr><td><code>topup</code></td><td>Saldo masuk (amount, balance, ref)</td></tr>
+            <tr><td><code>bot_online</code></td><td>Jadibotmu terhubung</td></tr>
+            <tr><td><code>bot_offline</code></td><td>Jadibotmu terputus (dengan alasan)</td></tr>
+            <tr><td><code>jadibot_created</code></td><td>Jadibot baru dibuat</td></tr>
+            <tr><td><code>sewa_habis</code></td><td>Masa sewa jadibot habis</td></tr>
+            <tr><td><code>test</code></td><td>Tombol "Tes" di panel</td></tr>
+        </table></div>
+    </div>
+
+    <h2 id="widget">WIDGET EMBED</h2>
+    <div class="ep">
+        <span class="desc">Badge SVG siap tempel di website, bio link, atau README GitHub — pakai API key-mu. Diperbarui tiap 60 detik.</span>
+        <pre>&lt;img src="https://host/api/widget/saldo.svg?key=KEYMU" height="28" alt="saldo"&gt;
+&lt;img src="https://host/api/widget/bots.svg?key=KEYMU" height="28" alt="bot"&gt;</pre>
+        <span class="desc">Hasilnya badge ala shields.io: <code>SALDO | Rp50.000</code> dan <code>BOT | 1/1 ONLINE</code>.</span>
+    </div>
+
+    <h2>REFERENSI LENGKAP PANEL</h2>
+    <p class="lead">Endpoint berikut dipakai panel web sendiri. Auth memakai cookie <code>mz_session</code> atau header <code>Authorization: Bearer TOKEN</code> dari <code>/api/auth/login</code>.</p>
+
+    <h3 id="auth">🔐 Authentikasi <span class="auth-badge b-pub">PUBLIK</span></h3>
+    <div class="tbl-scroll"><table data-wide>
+        <tr><th>Method</th><th>Endpoint</th><th>Keterangan</th></tr>
+        <tr><td><code>POST</code></td><td><code>/api/auth/register</code></td><td>Daftar akun (email + password + OTP WhatsApp)</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/auth/login</code></td><td>Login → token sesi (dirotasi otomatis tiap request)</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/auth/logout</code></td><td>Keluar & hapus sesi</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/auth/forgot</code></td><td>Minta reset password via OTP WhatsApp</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/auth/reset</code></td><td>Reset password memakai OTP</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/auth/otp/send</code></td><td>Kirim OTP (register / verifikasi)</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/auth/otp/verify</code></td><td>Verifikasi kode OTP</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/auth/providers</code></td><td>Daftar login OAuth yang tersedia</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/auth/:provider/start</code></td><td>Mulai alur OAuth (GitHub, dll)</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/auth/:provider/callback</code></td><td>Callback OAuth → auto login</td></tr>
+    </table></div>
+
+    <h3 id="profil">👤 Profil <span class="auth-badge b-sesi">SESI</span></h3>
+    <div class="tbl-scroll"><table data-wide>
+        <tr><th>Method</th><th>Endpoint</th><th>Keterangan</th></tr>
+        <tr><td><code>GET/POST</code></td><td><code>/api/profile</code></td><td>Lihat / ubah profil (nama tampilan, avatar, nomor WA)</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/profile/password</code></td><td>Ganti password</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/profile/delete</code></td><td>Hapus akun sendiri (undo 5 detik)</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/profile/wa/otp</code> · <code>/wa/verify</code></td><td>Verifikasi nomor WhatsApp (kode lewat <code>.verifweb</code>)</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/profile/2fa/setup</code> · <code>/enable</code> · <code>/disable</code></td><td>Dua faktor TOTP (QR + kode cadangan)</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/profile/unlink</code></td><td>Cabut koneksi login OAuth</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/profile/apikey</code></td><td>Buat / cabut personal API key (<code>mzk_…</code>)</td></tr>
+        <tr><td><code>GET/POST</code></td><td><code>/api/profile/sessions</code> · <code>/sessions/revoke</code></td><td>Perangkat login aktif + cabut per sesi / semua perangkat lain</td></tr>
+        <tr><td><code>GET/POST</code></td><td><code>/api/profile/webhook</code> · <code>/webhook/test</code></td><td>Atur URL + secret + event webhook, dan tes kirim</td></tr>
+        <tr><td><code>GET/POST</code></td><td><code>/api/profile/chatnotify</code> · <code>/chatnotify/test</code></td><td>Notifikasi Telegram / Discord</td></tr>
+        <tr><td><code>GET/POST</code></td><td><code>/api/profile/subs</code> · <code>/subs/delete</code></td><td>Sub-akun read-only (maks 3) untuk staf/reseller</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/profile/prefs</code></td><td>Preferensi: <code>lang</code> (id/en)</td></tr>
+        <tr><td><code>GET/POST</code></td><td><code>/api/profile/passkey</code>(+<code>/start</code>, <code>/finish</code>, <code>/delete</code>)</td><td>Passkey WebAuthn (fingerprint/FaceID) — daftar, login, hapus</td></tr>
+    </table></div>
+
+    <h3 id="jadibot">🤖 Jadibot <span class="auth-badge b-sesi">SESI</span></h3>
+    <div class="tbl-scroll"><table data-wide>
+        <tr><th>Method</th><th>Endpoint</th><th>Keterangan</th></tr>
+        <tr><td><code>GET</code></td><td><code>/api/jadibot/status</code></td><td>Status semua jadibot milikmu (state, health, masa aktif)</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/jadibot/buy</code></td><td>Sewa jadibot — pakai saldo atau QRIS</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/jadibot/free</code></td><td>Klaim slot gratis bila tersedia</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/jadibot/start</code> · <code>/stop</code></td><td>Nyalakan / matikan jadibot</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/jadibot/mode</code></td><td>Mode self (hanya owner nomor) / publik</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/jadibot/export</code></td><td>Download backup sesi (format <code>manzxy-session-v1</code>)</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/jadibot/import</code></td><td>Restore sesi dari backup (maks 14MB)</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/jadibot/events?number=</code></td><td>Timeline insiden bot: online / offline / expired / dihapus</td></tr>
+        <tr><td><code>GET/POST</code></td><td><code>/api/jadibot/autoreply?number=</code></td><td>Auto-reply: aturan kata kunci → balasan + balasan cadangan</td></tr>
+        <tr><td><code>GET/POST</code></td><td><code>/api/jadibot/schedule?number=</code></td><td>Pesan terjadwal (sekali / harian) via socket jadibot</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/jadibot/stats?number=</code></td><td>Statistik pesan 7 hari (masuk/keluar)</td></tr>
+        <tr><td><code>GET/POST</code></td><td><code>/api/jadibot/admins?number=</code></td><td>Multi-admin bot (maks 3 nomor)</td></tr>
+        <tr><td><code>GET/POST</code></td><td><code>/api/jadibot/bottext?number=</code></td><td>Menu &amp; sambutan kustom per bot</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/qr</code></td><td>QR / kode pairing saat bot connecting</td></tr>
+    </table></div>
+
+    <h3 id="transaksi">💳 Transaksi & Topup <span class="auth-badge b-sesi">SESI</span></h3>
+    <div class="tbl-scroll"><table>
+        <tr><th>Method</th><th>Endpoint</th><th>Keterangan</th></tr>
+        <tr><td><code>GET</code></td><td><code>/api/orders</code></td><td>Riwayat transaksi</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/ledger</code></td><td>Riwayat perubahan saldo</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/topup/packages</code></td><td>Daftar paket nominal topup</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/topup/create</code></td><td>Buat transaksi QRIS</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/topup/status</code></td><td>Cek status pembayaran</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/premium</code></td><td>Status & harga premium</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/premium/buy</code> · <code>/qris</code></td><td>Beli premium (saldo / QRIS)</td></tr>
+    </table></div>
+
+    <h3 id="referral">🎁 Referral <span class="auth-badge b-sesi">SESI</span></h3>
+    <div class="tbl-scroll"><table data-wide>
+        <tr><th>Method</th><th>Endpoint</th><th>Keterangan</th></tr>
+        <tr><td><code>GET</code></td><td><code>/api/referral</code></td><td>Kode, link, dan statistik undanganmu</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/referral/ensure</code></td><td>Pastikan kode referral sudah dibuat</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/referral/check?code=</code></td><td>Cek validitas kode (dipakai saat daftar)</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/referral/leaderboard</code></td><td>Top pengundang (nama + nomor dimasking)</td></tr>
+    </table></div>
+
+    <h3 id="data">📊 Data & Monitor <span class="auth-badge b-sesi">SESI</span></h3>
+    <div class="tbl-scroll"><table>
+        <tr><th>Method</th><th>Endpoint</th><th>Keterangan</th></tr>
+        <tr><td><code>GET</code></td><td><code>/api/me</code></td><td>Semua data sesi panel (saldo, prefs, status panic, dll)</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/monitor</code></td><td>Daftar bot realtime — mendukung SSE (<code>Accept: text/event-stream</code>)</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/traffic?hours=6–48</code></td><td>Seri aktivitas per jam untuk grafik</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/heatmap</code></td><td>Grid aktivitas 7×24</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/commandstats</code></td><td>Top 10 command + total pemakaian</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/export/:kind</code></td><td>Download CSV: <code>orders</code> / <code>ledger</code> / <code>users</code> (users = owner)</td></tr>
+    </table></div>
+
+    <h3 id="owner">👑 Owner <span class="auth-badge b-owner">OWNER</span></h3>
+    <div class="tbl-scroll"><table data-wide>
+        <tr><th>Method</th><th>Endpoint</th><th>Keterangan</th></tr>
+        <tr><td><code>GET</code></td><td><code>/api/admin/overview</code></td><td>Ringkasan dashboard owner</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/admin/sysinfo</code> (+<code>/history</code>, <code>/traffic</code>)</td><td>Kesehatan VPS: CPU, RAM, uptime, trafik</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/admin/db</code> (+<code>/raw</code>, <code>/view</code>)</td><td>Penjelajah database</td></tr>
+        <tr><td><code>GET/POST</code></td><td><code>/api/admin/users</code> · <code>/user</code> · <code>/account</code></td><td>Kelola user, saldo, ban</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/admin/slots</code> · <code>/packages</code> · <code>/promo</code></td><td>Atur slot, paket harga, promo — ter-audit & bisa di-revert</td></tr>
+        <tr><td><code>GET/POST</code></td><td><code>/api/admin/audit</code> · <code>/audit/revert</code></td><td>Log audit + tombol undo per perubahan</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/admin/logs</code></td><td>Log aktivitas panel</td></tr>
+        <tr><td><code>GET</code></td><td><code>/api/admin/console</code> · <code>/console/stream</code></td><td>Live log server (SSE, maks 3 penonton)</td></tr>
+        <tr><td><code>POST</code></td><td><code>/api/admin/panic</code></td><td>Kill switch: jeda semua bot kecuali owner</td></tr>
+        <tr><td><code>POST/GET</code></td><td><code>/api/admin/broadcast</code> (+<code>/status</code>, <code>/cancel</code>)</td><td>Broadcast WA ke semua/user/jadibot + progress</td></tr>
+        <tr><td><code>GET/POST</code></td><td><code>/api/admin/dailyreport</code></td><td>Laporan harian otomatis ke WA owner</td></tr>
+        <tr><td><code>GET/POST</code></td><td><code>/api/admin/oauth</code></td><td>Kelola kredensial OAuth</td></tr>
+    </table></div>
+
+    <h3 id="error">❌ Kode Error</h3>
+    <div class="tbl-scroll"><table>
+        <tr><th>Kode</th><th>Arti</th></tr>
+        <tr><td><code>400</code></td><td>Permintaan tidak valid (parameter kurang/salah)</td></tr>
+        <tr><td><code>401</code></td><td>Belum login / API key salah</td></tr>
+        <tr><td><code>403</code></td><td>Tidak punya akses (owner-only, sub-akun read-only)</td></tr>
+        <tr><td><code>404</code></td><td>Bot / data tidak ditemukan</td></tr>
+        <tr><td><code>429</code></td><td>Lewat batas laju — coba lagi nanti</td></tr>
+    </table></div>
+
+    <p class="lead" style="margin-top:28px">Butuh bantuan? Hubungi owner lewat WhatsApp, atau buka <a href="/status">status layanan</a>.</p>
+
+</div>
+</body>
+</html>

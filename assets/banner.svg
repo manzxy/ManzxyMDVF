@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 260" width="1200" height="260" role="img" aria-label="ManzxyMD — WhatsApp Bot Platform">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#16161a"/>
+      <stop offset="55%" stop-color="#1e1e24"/>
+      <stop offset="100%" stop-color="#16161a"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#FFE500"/>
+      <stop offset="50%" stop-color="#FF5DA2"/>
+      <stop offset="100%" stop-color="#3D8BFF"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="7" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="260" fill="url(#bg)"/>
+
+  <!-- grid halus -->
+  <g stroke="#ffffff" stroke-opacity="0.07" stroke-width="1">
+    <path d="M0 65H1200M0 130H1200"/>
+    <path d="M75 0V260M150 0V260M225 0V260M300 0V260M375 0V260M450 0V260M525 0V260M600 0V260M675 0V260M750 0V260M825 0V260M900 0V260M975 0V260M1050 0V260M1125 0V260"/>
+  </g>
+
+  <!-- garis aksen berjalan -->
+  <rect x="0" y="0" width="1200" height="5" fill="url(#accent)">
+    <animate attributeName="opacity" values="0.45;1;0.45" dur="4s" repeatCount="indefinite"/>
+  </rect>
+
+  <!-- ornamen sudut -->
+  <g fill="none" stroke="#FFE500" stroke-width="4" stroke-opacity="0.9">
+    <path d="M34 34h44M34 34v44"/>
+    <path d="M1166 34h-44M1166 34v44"/>
+    <path d="M34 226h44M34 226v-44"/>
+    <path d="M1166 226h-44M1166 226v-44"/>
+  </g>
+
+  <!-- status pill -->
+  <g transform="translate(78,72)">
+    <rect x="0" y="0" width="196" height="30" rx="0" fill="#4ADE80"/>
+    <circle cx="18" cy="15" r="5" fill="#16161a">
+      <animate attributeName="opacity" values="1;0.25;1" dur="1.6s" repeatCount="indefinite"/>
+    </circle>
+    <text x="34" y="20" font-family="DejaVu Sans Mono, Consolas, Menlo, monospace" font-size="13" font-weight="700" fill="#16161a" letter-spacing="1.5">BOT ONLINE</text>
+  </g>
+
+  <!-- judul -->
+  <text x="76" y="164" font-family="DejaVu Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="66" font-weight="bold" fill="#FFF9E8">Manzxy<tspan fill="#FFE500">MD</tspan></text>
+
+  <!-- tagline -->
+  <text x="80" y="200" font-family="DejaVu Sans, Segoe UI, Helvetica, Arial, sans-serif" font-size="17" font-weight="500" fill="#FFF9E8" fill-opacity="0.82" letter-spacing="0.4">WhatsApp Bot Platform · Plugin Architecture · Multi-Session · Web Panel</text>
+
+  <!-- garis bawah judul -->
+  <rect x="80" y="172" width="0" height="4" fill="url(#accent)" filter="url(#glow)">
+    <animate attributeName="width" values="0;360;360" dur="2.4s" keyTimes="0;0.6;1" fill="freeze"/>
+  </rect>
+
+  <!-- metrik kanan -->
+  <g font-family="DejaVu Sans Mono, Consolas, Menlo, monospace">
+    <g transform="translate(880,86)">
+      <rect x="0" y="0" width="240" height="46" fill="#FFF9E8" fill-opacity="0.92" stroke="#FFE500" stroke-opacity="0.9" stroke-width="2"/>
+      <text x="14" y="18" font-size="10" font-weight="700" fill="#3a3a42" letter-spacing="1.4">COMMANDS</text>
+      <text x="14" y="37" font-size="20" font-weight="800" fill="#16161a">311</text>
+      <text x="120" y="18" font-size="10" font-weight="700" fill="#3a3a42" letter-spacing="1.4">PLUGINS</text>
+      <text x="120" y="37" font-size="20" font-weight="800" fill="#16161a">95</text>
+    </g>
+    <g transform="translate(880,142)">
+      <rect x="0" y="0" width="240" height="46" fill="#FFF9E8" fill-opacity="0.92" stroke="#FFE500" stroke-opacity="0.9" stroke-width="2"/>
+      <text x="14" y="18" font-size="10" font-weight="700" fill="#3a3a42" letter-spacing="1.4">RUNTIME</text>
+      <text x="14" y="37" font-size="20" font-weight="800" fill="#16161a">Node 22</text>
+      <text x="120" y="18" font-size="10" font-weight="700" fill="#3a3a42" letter-spacing="1.4">MODULE</text>
+      <text x="120" y="37" font-size="20" font-weight="800" fill="#16161a">CJS</text>
+    </g>
+  </g>
+
+  <!-- bilah bawah bergerak -->
+  <rect x="0" y="255" width="1200" height="5" fill="#16161a"/>
+  <rect x="-200" y="255" width="200" height="5" fill="url(#accent)">
+    <animate attributeName="x" values="-200;1200" dur="3.6s" repeatCount="indefinite"/>
+  </rect>
+</svg>

@@ -1,0 +1,517 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   SHELL — kerangka aplikasi
+   ───────────────────────────────────────────────────────────────────────
+   Struktur lama: topbar + deretan tab horizontal yang mendorong konten ke
+   bawah dan berdesakan di HP. Struktur baru:
+
+     Desktop (≥1024px)  sidebar tetap di kiri, konten mengalir di kanan
+     Tablet (768–1023)  sidebar jadi drawer, topbar dengan tombol menu
+     Mobile (<768px)    drawer + bottom nav 5 tombol utama
+
+   Semua navigasi tetap memakai class .tab + data-page, jadi switchPage()
+   tidak perlu diubah. Yang berubah hanya bentuk visualnya.
+   ═══════════════════════════════════════════════════════════════════════ */
+
+:root {
+    --side-w: 246px;
+    --top-h: 60px;
+    --bottom-h: 62px;
+    --nav-ic: 18px;
+}
+
+/* ── sprite ikon: tidak menempati ruang, tidak terlihat ── */
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+/* Ikon garis: satu gaya untuk semua, mengikuti warna teks. */
+.nav-ic {
+    width: var(--nav-ic); height: var(--nav-ic);
+    flex: 0 0 auto;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    pointer-events: none;
+}
+/* simbol yang memang solid (grid, crown, bot) */
+.nav-ic use[href="#i-grid"], .nav-ic use[href="#i-crown"] { fill: currentColor; stroke: none; }
+
+/* ══════════ KERANGKA ══════════ */
+
+.app-shell {
+    display: grid;
+    grid-template-columns: var(--side-w) minmax(0, 1fr);
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.app-main {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+/* ══════════ SIDEBAR ══════════ */
+
+.sidebar {
+    position: sticky;
+    top: 0;
+    align-self: start;
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 16px 12px;
+    background: var(--glass-bg-strong, rgba(255, 255, 255, .72));
+    border-right: 1px solid var(--glass-border, var(--line));
+    z-index: 60;
+    overflow: hidden;
+}
+
+/* Kartu identitas: avatar + nama + nomor + tag akun (owner/premium) */
+.side-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+    margin-bottom: 8px;
+    min-width: 0;
+    flex: 0 0 auto;
+    border: 1px solid var(--glass-border, var(--line));
+    border-radius: 14px;
+    background: var(--glass-bg, var(--wash));
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.side-id { display: flex; align-items: center; gap: 10px; min-width: 0; flex: 1 1 auto; }
+
+/* Tanpa foto profil, kotak ini memakai gradien merek — tetap terbaca sebagai
+   penanda aplikasi, bukan kotak kosong. */
+.side-ava {
+    width: 38px; height: 38px; flex: 0 0 auto;
+    display: grid; place-items: center;
+    border-radius: 12px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #4f46e5 0%, #6d28d9 55%, #7c3aed 100%);
+    color: #fff; font-weight: 800; font-size: 15px; letter-spacing: -.02em;
+    line-height: 1;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 4px 12px -4px rgba(79,70,229,.5);
+}
+.side-ava img { width: 100%; height: 100%; object-fit: cover; }
+
+.side-id-text {
+    display: flex; flex-direction: column; gap: 1px;
+    line-height: 1.22; min-width: 0; flex: 1 1 auto;
+}
+.side-id-text strong {
+    font-size: 13px; font-weight: 800; letter-spacing: .03em;
+    color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.side-id-text #hdr-user {
+    font-size: 10.5px; color: var(--muted);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* deretan tag di bawah nama */
+.side-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.side-tags:empty { display: none; }
+
+.tag-chip {
+    padding: 2px 7px;
+    font-size: 9px; font-weight: 800; letter-spacing: .06em;
+    line-height: 1.5; gap: 3px;
+}
+.tag-chip .tag-ico { font-size: 9px; line-height: 1; }
+.tag-chip-sm { padding: 2px 6px; font-size: 8.5px; }
+
+/* penanda pada item menu (mis. PREMIUM → AKTIF, OWNER → ROOT) */
+.nav-tag {
+    margin-left: auto; flex: 0 0 auto;
+    padding: 2px 6px; border-radius: 999px;
+    font-size: 8.5px; font-weight: 800; letter-spacing: .06em;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #fff;
+}
+.nav-tag-owner { background: var(--ink); color: #fff; }
+html[data-theme="dark"] .nav-tag-owner { background: #e6edf7; color: #0b1220; }
+
+/* tag ringkas di topbar */
+.top-tags { display: flex; align-items: center; gap: 5px; }
+.top-tags:empty { display: none; }
+.side-close {
+    display: none;
+    width: 32px; height: 32px; flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid var(--glass-border, var(--line));
+    border-radius: 9px;
+    background: transparent; color: var(--muted);
+    cursor: pointer;
+}
+.side-close:hover { color: var(--ink); }
+
+/* ── daftar menu ── */
+.side-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    padding-right: 2px;
+}
+.side-nav::-webkit-scrollbar { width: 6px; }
+.side-nav::-webkit-scrollbar-thumb { background: var(--line); border-radius: 99px; }
+
+.side-label {
+    margin: 12px 8px 4px;
+    font-size: 9.5px;
+    font-weight: 800;
+    letter-spacing: .12em;
+    color: var(--muted);
+    opacity: .75;
+    text-transform: uppercase;
+}
+.side-label:first-child { margin-top: 2px; }
+
+/* .tab di sidebar: baris penuh, ikon + label */
+.sidebar .tab,
+.bottom-nav .tab {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid transparent;
+    border-radius: 11px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 12.5px;
+    font-weight: 650;
+    letter-spacing: .01em;
+    text-align: left;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.sidebar .tab:hover,
+.bottom-nav .tab:hover { background: var(--wash); color: var(--ink); }
+
+.sidebar .tab.active {
+    background: var(--au-primary-soft, var(--wash));
+    color: var(--au-primary, var(--ink));
+    border-color: var(--au-primary-line, transparent);
+    box-shadow: none;
+    font-weight: 750;
+}
+.sidebar .tab.active .nav-ic { stroke-width: 2.1; }
+
+/* Tautan luar di sidebar (Dokumentasi, Status layanan) memakai .tab yang sama
+   supaya tinggi & ikonnya konsisten, tapi dirender sebagai <a>. */
+.sidebar a.tab-link { text-decoration: none; }
+.sidebar a.tab-link:focus-visible { outline: 2px solid var(--au-primary, var(--blue)); outline-offset: 2px; }
+
+.nav-label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* grup admin: pemisah halus */
+.side-admin { display: block; }
+.side-admin.hidden { display: none; }
+
+/* ── kaki sidebar ── */
+.side-foot {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 12px;
+    margin-top: 4px;
+    border-top: 1px solid var(--glass-border, var(--line));
+    flex: 0 0 auto;
+}
+.side-foot .balance-chip {
+    justify-content: center;
+    width: 100%;
+    padding: 7px 10px;
+    font-size: 12px;
+}
+.side-foot .theme-switch { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); }
+.side-foot .theme-opt { width: 100%; height: 30px; display: grid; place-items: center; }
+.side-foot .theme-opt .nav-ic { width: 15px; height: 15px; }
+
+.side-logout {
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 11.5px;
+    letter-spacing: .04em;
+}
+.side-logout .nav-ic { width: 15px; height: 15px; }
+
+/* ══════════ TOPBAR ══════════ */
+
+.app-main .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: var(--top-h);
+    padding: 8px clamp(12px, 2.4vw, 24px);
+    background: var(--glass-bg-strong, rgba(255, 255, 255, .82));
+    -webkit-backdrop-filter: blur(12px) saturate(150%);
+    backdrop-filter: blur(12px) saturate(150%);
+    border-bottom: 1px solid var(--glass-border, var(--line));
+}
+
+.top-menu {
+    display: none;
+    width: 36px; height: 36px; flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid var(--glass-border, var(--line));
+    border-radius: 10px;
+    background: var(--glass-bg, transparent);
+    color: var(--ink);
+    cursor: pointer;
+}
+.top-menu:hover { background: var(--wash); }
+
+.top-crumb { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1 1 auto; }
+.top-crumb h1 {
+    margin: 0;
+    font-size: clamp(15px, 1.6vw, 17px);
+    font-weight: 800;
+    letter-spacing: -.01em;
+    color: var(--ink);
+    line-height: 1.2;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.top-crumb #page-sub {
+    font-size: 10.5px;
+    color: var(--muted);
+    letter-spacing: .02em;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+.app-main .topbar-right { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+
+/* chip saldo di topbar hanya untuk layar sempit (di desktop sudah ada di sidebar) */
+.top-balance { display: none; }
+
+/* ══════════ KONTEN ══════════ */
+
+/* Judul halaman sekarang tinggal di topbar (id="page-crumb"). Judul lama di
+   dalam tiap section disembunyikan supaya tidak dobel — tapi tetap ada di DOM
+   agar struktur halaman tidak berubah. */
+.app-main .page-title { display: none; }
+
+.app-main .content {
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 22px clamp(12px, 2.4vw, 26px) 40px;
+}
+
+/* ══════════ FOOTER ══════════ */
+
+.app-main .footer {
+    margin-top: auto;
+    padding-left: clamp(12px, 2.4vw, 26px);
+    padding-right: clamp(12px, 2.4vw, 26px);
+}
+
+/* ══════════ BOTTOM NAV (mobile) ══════════ */
+
+.bottom-nav { display: none; }
+
+/* ══════════ SCRIM (drawer) ══════════ */
+
+/* saat drawer terbuka di HP, halaman di belakang tidak boleh ikut bergulir */
+html.nav-open,
+html.nav-open body { overflow: hidden; }
+
+.side-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: rgba(9, 14, 26, .48);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+    border: 0;
+    padding: 0;
+    opacity: 0;
+    transition: opacity .2s ease;
+}
+.side-scrim[hidden] { display: none; }
+.side-scrim.show { opacity: 1; }
+
+/* ══════════ TABLET & MOBILE: sidebar jadi drawer ══════════ */
+
+@media (max-width: 1023px) {
+    .app-shell { grid-template-columns: minmax(0, 1fr); }
+
+    .sidebar {
+        position: fixed;
+        top: 0; left: 0; bottom: 0;
+        width: min(84vw, 300px);
+        height: 100vh;
+        height: 100dvh;
+        transform: translateX(-102%);
+        transition: transform .24s cubic-bezier(.22, .8, .3, 1);
+        box-shadow: 0 18px 50px -12px rgba(9, 14, 26, .45);
+        border-right: 1px solid var(--glass-border, var(--line));
+        will-change: transform;
+    }
+    .sidebar.open { transform: none; }
+
+    .side-close { display: grid; }
+    .top-menu { display: grid; }
+    .top-balance { display: inline-flex; }
+
+    /* di drawer, chip saldo & tema tetap tampil (tidak ada tempat lain) */
+    .side-foot { display: flex; }
+
+    .app-main .content { padding-bottom: 28px; }
+
+    .app-main .footer { padding-bottom: 18px; }
+}
+
+/* ══════════ MOBILE: bottom nav ══════════ */
+
+@media (max-width: 767px) {
+    .app-main .content {
+        padding: 16px 12px calc(var(--bottom-h) + 22px);
+    }
+
+    /* footer harus berhenti di atas bottom nav, bukan di bawahnya */
+    .app-main .footer {
+        padding-left: 12px;
+        padding-right: 12px;
+        padding-bottom: calc(var(--bottom-h) + 14px);
+    }
+
+    .bottom-nav {
+        position: fixed;
+        left: 0; right: 0; bottom: 0;
+        z-index: 50;
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        align-items: stretch;
+        gap: 2px;
+        padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px));
+        background: var(--glass-bg-strong, rgba(255, 255, 255, .92));
+        -webkit-backdrop-filter: blur(14px) saturate(150%);
+        backdrop-filter: blur(14px) saturate(150%);
+        border-top: 1px solid var(--glass-border, var(--line));
+    }
+
+    /* tombol bottom nav: ikon di atas, label kecil di bawah */
+    .bottom-nav .tab {
+        flex-direction: column;
+        justify-content: center;
+        gap: 3px;
+        padding: 6px 2px;
+        border-radius: 10px;
+        font-size: 9.5px;
+        font-weight: 700;
+        letter-spacing: .01em;
+        text-align: center;
+        min-width: 0;
+        line-height: 1.1;
+    }
+    .bottom-nav .tab .nav-ic { width: 20px; height: 20px; }
+    .bottom-nav .nav-label {
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .bottom-nav .tab.active {
+        background: var(--au-primary-soft, var(--wash));
+        color: var(--au-primary, var(--ink));
+        border-color: transparent;
+        box-shadow: none;
+    }
+
+    /* topbar lebih ringkas: judul halaman tetap terbaca */
+    .app-main .topbar { min-height: 54px; padding: 6px 10px; gap: 8px; }
+    .top-crumb #page-sub { display: none; }
+    .top-balance { display: none; }
+    /* tag pindah ke drawer (kartu identitas) supaya topbar tidak sesak */
+    .top-tags { display: none; }
+    .app-main .avatar-btn { width: 32px; height: 32px; font-size: 12px; }
+}
+
+/* tombol non-navigasi di bottom nav (buka drawer) — bukan .tab, jadi tidak
+   ikut logika switchPage dan tidak pernah jadi "aktif" */
+.bottom-nav .nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    padding: 6px 2px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--muted);
+    font-size: 9.5px;
+    font-weight: 700;
+    line-height: 1.1;
+    cursor: pointer;
+    min-width: 0;
+}
+.bottom-nav .nav-btn .nav-ic { width: 20px; height: 20px; }
+.bottom-nav .nav-btn .nav-label {
+    width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.bottom-nav .nav-btn:active { background: var(--wash); }
+
+/* ══════════ LAYAR SANGAT SEMPIT ══════════ */
+
+@media (max-width: 380px) {
+    .bottom-nav { grid-template-columns: repeat(6, 1fr); padding: 5px 4px calc(5px + env(safe-area-inset-bottom, 0px)); }
+    .bottom-nav .tab { font-size: 8.5px; }
+    .bottom-nav .tab .nav-ic { width: 18px; height: 18px; }
+    .bottom-nav .nav-btn { font-size: 8.5px; }
+    .bottom-nav .nav-btn .nav-ic { width: 18px; height: 18px; }
+}
+
+/* ══════════ DESKTOP LEBAR: konten sedikit lebih lega ══════════ */
+
+@media (min-width: 1440px) {
+    :root { --side-w: 262px; }
+    .app-main .content { max-width: 1200px; }
+}
+
+/* ══════════ AKSESIBILITAS ══════════ */
+
+/* fokus keyboard harus selalu terlihat di navigasi */
+.sidebar .tab:focus-visible,
+.bottom-nav .tab:focus-visible,
+.top-menu:focus-visible,
+.side-close:focus-visible {
+    outline: 2px solid var(--au-primary, #4f46e5);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .sidebar { transition: none !important; }
+    .side-scrim { transition: none !important; }
+}
+
+/* perangkat sentuh: bottom nav tidak perlu efek hover */
+@media (hover: none) {
+    .bottom-nav .tab:hover { background: transparent; color: var(--muted); }
+    .bottom-nav .tab.active:hover { background: var(--au-primary-soft, var(--wash)); color: var(--au-primary, var(--ink)); }
+    .bottom-nav .nav-btn:hover { background: transparent; color: var(--muted); }
+}

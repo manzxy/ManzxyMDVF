@@ -1,0 +1,14 @@
+{
+    "name": "ManzxyMD — Panel Jadibot",
+    "short_name": "ManzxyMD",
+    "description": "Kelola bot WhatsApp: jadibot, saldo, premium, dan monitor — langsung dari browser.",
+    "start_url": "/panel",
+    "scope": "/panel",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#FFF9E8",
+    "theme_color": "#FFE500",
+    "icons": [
+        { "src": "/panel/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    ]
+}

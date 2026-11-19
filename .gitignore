@@ -1,0 +1,30 @@
+node_modules/
+
+# ── Sesi WhatsApp & cadangan — JANGAN pernah naik ke GitHub ──
+session/
+session_zapo/
+sessions_jadibot/
+backups/
+
+# ── Data pengguna & database ──
+database/*.json
+database/*.json.bak
+database/*.db
+database/*.db-shm
+database/*.db-wal
+
+# ── Kredensial ──
+.env
+.env.*
+!.env.example
+
+# ── Workspace internal / artefak lokal ──
+.perch/
+.uxshots/
+verification-log.txt
+*.log
+*.zip
+*.bak
+.cache/
+coverage/
+tmp/
