@@ -4,16 +4,16 @@
 
 <img src="assets/banner.svg" alt="ManzxyMD" width="100%">
 
-**WhatsApp Bot berbasis [Baileys](https://github.com/WhiskeySockets/Baileys) & Node.js — arsitektur plugin, CommonJS.**
+**WhatsApp Bot berbasis [zapo-js](https://www.npmjs.com/package/zapo-js) & Node.js — arsitektur plugin, CommonJS.**
 
 Bot WhatsApp modular dengan sistem plugin, jadibot (multi-sesi), langganan premium,
 pembayaran QRIS, permainan, serta panel web dengan telemetri server.
 
 ![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A518-339933?logo=node.js&logoColor=white)
-![Baileys](https://img.shields.io/badge/Baileys-latest-25D366?logo=whatsapp&logoColor=white)
+![zapo-js](https://img.shields.io/badge/zapo-js-v1.12.0-25D366?logo=whatsapp&logoColor=white)
 ![Module](https://img.shields.io/badge/module-CommonJS-f7df1e)
 ![Version](https://img.shields.io/badge/version-8.11.1-blue)
-![Plugins](https://img.shields.io/badge/plugins-95%20file%20%C2%B7%20311%20command-FF5DA2)
+![Plugins](https://img.shields.io/badge/plugins-102%20file%20%C2%B7%20338%20command-FF5DA2)
 ![Panel](https://img.shields.io/badge/panel-neobrutalism-3D8BFF)
 ![License](https://img.shields.io/badge/license-Unlicensed-lightgrey)
 
@@ -57,7 +57,7 @@ penggantian, atau penghapusan fitur tanpa menyentuh `index.js`.
 ```text
     ┌──────────────┐   ┌──────────────┐   ┌──────────────┐
     │   WhatsApp   │──▶│   handler/   │──▶│   plugins/   │
-    │   (Baileys)  │   │  filter/akses│   │  per kategori│
+    │  (zapo-js)   │   │  filter/akses│   │  per kategori│
     └──────────────┘   └───────┬──────┘   └───────┬──────┘
                                │                  │
                         ┌──────▼──────────────────▼──────┐
@@ -87,7 +87,7 @@ penggantian, atau penghapusan fitur tanpa menyentuh `index.js`.
 
 | Kebutuhan | Keterangan |
 | --- | --- |
-| **Node.js** | **≥ 18** (diuji pada Node 22) — wajib untuk sintaks dan API Baileys terkini. |
+| **Node.js** | **≥ 18** (diuji pada Node 22) — wajib untuk sintaks dan API zapo-js terkini. |
 | **npm** | Disertakan bersama Node.js. |
 | **Akun WhatsApp** | Nomor yang akan ditautkan sebagai bot (disarankan nomor khusus, bukan nomor pribadi utama). |
 | **Jaringan** | Akses ke server WhatsApp dan layanan pihak ketiga yang dipakai plugin tertentu. |
@@ -99,7 +99,7 @@ penggantian, atau penghapusan fitur tanpa menyentuh `index.js`.
 ## Instalasi
 
 ```bash
-git clone <url-repositori-anda> ManzxyBase
+git clone https://github.com/manzxy/ManzxyMDVF.git ManzxyMDVF
 cd ManzxyBase
 npm ci
 ```
@@ -196,7 +196,7 @@ npm start         # jalankan kembali memakai sesi tersimpan
 
 ```text
 index.js
-  └─ membuat socket Baileys
+  └─ membuat socket zapo-js (zapoEngine + zapoCompat)
 handler/events.js
   └─ meneruskan event
 handler/parser.js
@@ -987,9 +987,9 @@ Catatan operasional:
 Proyek ini tidak menyertakan berkas lisensi eksplisit; hak penggunaan mengikuti kebijakan pemilik repositori.
 Dependensi pihak ketiga memiliki lisensinya masing-masing.
 
-- [Baileys](https://github.com/WhiskeySockets/Baileys) — pustaka WhatsApp Web API.
+- [zapo-js](https://www.npmjs.com/package/zapo-js) — pustaka WhatsApp Web API (engine utama, v1.12.0).
 - [Node.js](https://nodejs.org/), [sharp](https://sharp.pixelplumbing.com/), [@napi-rs/canvas](https://github.com/Brooooooklyn/canvas).
 
 <div align="center">
-<sub>ManzxyMD v8.11.1 — dibuat untuk pengelolaan akun & grup milik sendiri.</sub>
+<sub>ManzxyMD v8.11.1 — engine zapo-js 1.12.0 — dibuat untuk pengelolaan akun & grup milik sendiri.</sub>
 </div>
