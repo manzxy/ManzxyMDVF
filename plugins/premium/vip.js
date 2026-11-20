@@ -1,15 +1,17 @@
 /**
  * CONTOH STRUKTUR PLUGIN PREMIUM
  * ─────────────────────────────────────────────────────────────
- * Cukup tambahkan `premium: true`. Handler (handler.js) otomatis:
+ * KERANGKA FITUR LANGAKA / PREMIUM
+ * Free dan premium memakai bot yang sama — bedanya di full update + fitur langka.
+ * Cukup tambahkan `premium: true`. Handler (handler/message.js) otomatis:
  *   • menolak user non-premium dengan teks TEXT.premiumBody + tombol "Beli Premium"
  *   • tetap mengizinkan Owner
  * Properti lain yang bisa dipadukan:
  *   register: true   → wajib .daftar dulu (dicek sebelum premium)
  *   limit: 0         → tidak memakai limit (premium memang sudah unlimited)
  *   owner / group / private / admin / botAdmin → aturan akses biasa
- * Teks penolakan bisa diubah di handler.js (objek TEXT). Plugin menerima `texts`, `isPremium`, `isRegistered` di ctx.
- * Salin file ini sebagai kerangka plugin premium barumu (atau pakai .svplug).
+ * Teks penolakan bisa diubah di handler/texts.js (objek TEXT). Plugin menerima `texts`, `isPremium`, `isRegistered` di ctx.
+ * Salin file ini sebagai kerangka fitur langka barumu (atau pakai .svplug).
  */
 module.exports = {
     name: 'Zona VIP',

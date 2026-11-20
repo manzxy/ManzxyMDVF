@@ -242,9 +242,11 @@ Beberapa perintah mensyaratkan owner, premium, admin grup, atau fitur pembayaran
 `ai` · `anime` · `downloader` · `game` · `group` · `info` · `interactive` · `jadibot` ·
 `main` · `owner` · `plugin` · `premium` · `rpg` · `tools`
 
-> **Edisi gratis:** user biasa mendapat limit 30/hari; kategori berat (`rpg`, `anime`,
-> `downloader`, `ai`, `game`) memakai limit, plugin berflag premium diblokir, dan jadibot
-> dibatasi 1 per user. Owner tetap unlimited. Edisi Premium menghapus pembatasan ini.
+> **Free = Premium secara fitur.** Keduanya memakai bot yang sama: limit 50/hari,
+> jadibot 2 per user, semua kategori aktif. Pembedanya bukan fitur yang dikunci, tapi
+> **full update berkelanjutan, function terbaru, dan fitur langka** yang masuk ke edisi
+> Premium lebih dulu. Fitur langka ditandai dengan `premium: true` pada plugin
+> (lihat `plugins/premium/vip.js` sebagai kerangka).
 
 ### Sistem RPG
 

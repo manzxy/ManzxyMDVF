@@ -1859,6 +1859,17 @@ html[data-theme="dark"] .feed-ico { background: var(--wash-inv); }
 }
 html[data-theme="dark"] .nav-unread { box-shadow: 0 0 0 2px #111a2e; }
 
+/* ═══════════ WHAT'S NEW (changelog) ═══════════ */
+.wn-list { margin: 10px 0 0; padding-left: 20px; }
+.wn-list li {
+    position: relative; padding: 7px 0 7px 4px;
+    font-size: 13px; line-height: 1.55; color: var(--ink);
+    border-bottom: 1px dashed var(--line);
+}
+.wn-list li:last-child { border-bottom: 0; }
+.wn-list li::marker { color: var(--blue); }
+.wn-list b { color: var(--ink); }
+
 @media (max-width: 560px) {
     .theme-opt { width: 27px; height: 27px; font-size: 12px; }
 }
