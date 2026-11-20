@@ -3,9 +3,8 @@
  * CLI lisensi ManzxyMD Free (CLIENT / user).
  *
  * Key HANYA bisa dibuat oleh owner lewat bot ManzxyBase (.createkey).
- * Di sini hanya bisa memasang dan mengecek key.
+ * Di sini hanya bisa memasang dan mengecek key. Cukup key — tidak ada fingerprint.
  *
- *   node scripts/license.js fingerprint         lihat fingerprint mesin (kirim ke owner)
  *   node scripts/license.js install <key>       simpan key dari owner ke .license-key
  *   node scripts/license.js verify <key>        cek kevalidan key
  *   node scripts/license.js status              cek status lisensi saat ini
@@ -28,11 +27,6 @@ function showResult(r) {
 }
 
 switch (cmd) {
-    case 'fingerprint':
-        console.log('Fingerprint mesin ini:');
-        console.log('  ' + lic.displayFingerprint());
-        console.log('\nKirim kode ini ke owner untuk dibuatkan license key.');
-        break;
     case 'install': {
         const key = args[0];
         if (!key) { console.error('Usage: node scripts/license.js install <key>'); process.exit(1); }
@@ -54,7 +48,6 @@ switch (cmd) {
     }
     case 'status':
         showResult(lic.check());
-        console.log('   Fingerprint mesin:', lic.displayFingerprint());
         break;
     case 'revoke-list':
         console.log('Daftar ID key yang dicabut:', lic.loadRevoked().join(', ') || '(kosong)');
@@ -62,12 +55,12 @@ switch (cmd) {
     default:
         console.log('ManzxyMD Free — License Client\n');
         console.log('Perintah:');
-        console.log('  fingerprint              lihat fingerprint mesin (kirim ke owner)');
         console.log('  install <key>            pasang key dari owner');
         console.log('  verify <key>             cek kevalidan key');
         console.log('  status                   cek status lisensi saat ini');
         console.log('  revoke-list              lihat daftar key yang dicabut');
-        console.log('\nAtau pakai command WA: .setkey / .delkey / .license / .fingerprint');
+        console.log('\nAtau pakai command WA: .setkey / .delkey / .license');
         console.log('\nKey dibuat oleh owner lewat .createkey di bot ManzxyBase.');
+        console.log('Cukup key — tidak perlu fingerprint. Tempel key di console saat start bot.');
         break;
 }

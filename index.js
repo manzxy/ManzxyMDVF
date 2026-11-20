@@ -4,12 +4,58 @@ const path = require('path');
 
 /* ── License gate. Jalan SEBELUM modul lain. ──
  * Alur: owner buat key → kasih ke user → user tempel di console saat start.
- *   --fingerprint        → tampilkan fingerprint, keluar (buat minta key)
- *   --key <key>          → pakai key dari argumen (PM2/systemd), simpan, lanjut
- *   key di env/.license-key → lanjut
- *   belum ada key        → TANYA di console, verifikasi, simpan, lanjut
+ *   --key <key>            pakai key dari argumen (PM2/systemd), simpan, lanjut
+ *   key di env/.license-key → lanjut otomatis
+ *   belum ada key          → TANYA di console, verifikasi, simpan, lanjut
+ * Key tidak diikat fingerprint — cukup key.
  */
 const lic = require('./lib/core/license');
+
+/* ── Console styling ── */
+const C = {
+    reset: '\x1b[0m', bold: '\x1b[1m', dim: '\x1b[2m',
+    cyan: '\x1b[36m', green: '\x1b[32m', red: '\x1b[31m',
+    yellow: '\x1b[33m', gray: '\x1b[90m', white: '\x1b[97m'
+};
+const W = 56;
+const paint = (s, c) => c + s + C.reset;
+const row = (text = '') => '  │ ' + text.padEnd(W - 4) + ' │';
+const lineTop = '  ╭' + '─'.repeat(W - 2) + '╮';
+const lineBot = '  ╰' + '─'.repeat(W - 2) + '╯';
+const center = (text) => '  │ ' + text.padStart(Math.floor((W - 4 + text.length) / 2)).padEnd(W - 4) + ' │';
+
+function boxHeader(title, subtitle) {
+    console.log('\n' + lineTop);
+    console.log(center(paint(title, C.bold + C.cyan)));
+    if (subtitle) console.log(row(paint(subtitle, C.gray)));
+    console.log(lineBot);
+}
+
+function statusLine(label, value, color) {
+    console.log('  ' + paint(label.padEnd(11), C.gray) + paint(value, color));
+}
+
+function expiryText(e) {
+    if (!e) return 'Seumur hidup';
+    const d = new Date(e);
+    const days = Math.ceil((d - Date.now()) / 86400000);
+    if (days <= 0) return 'Hari ini';
+    return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) +
+        '  (' + days + ' hari lagi)';
+}
+
+function printLicense(r, source) {
+    console.log('');
+    console.log(lineTop);
+    console.log(center(paint('✓ LISENSI AKTIF', C.bold + C.green)));
+    console.log(lineBot);
+    statusLine('Customer', r.payload?.c || '-', C.white);
+    statusLine('Tier', String(r.payload?.t || 'free').toUpperCase(), C.cyan);
+    statusLine('ID', r.payload?.j || '-', C.gray);
+    statusLine('Berlaku', expiryText(r.payload?.e), C.green);
+    if (source) statusLine('Sumber', source, C.gray);
+    console.log('');
+}
 
 let _licenseRl = null;
 const question = (text) => new Promise((resolve) => {
@@ -18,74 +64,65 @@ const question = (text) => new Promise((resolve) => {
 });
 const closeQuestion = () => { try { _licenseRl?.close(); } catch {} _licenseRl = null; };
 
-function printLicense(r) {
-    console.log(`\n  🔐 Lisensi aktif — ${r.payload?.c || 'customer'} (${r.payload?.t || 'free'})`);
-    console.log(`     ID: ${r.payload?.j || '-'} | Berlaku s/d: ${r.payload?.e ? new Date(r.payload.e).toISOString() : 'selamanya'}\n`);
-}
-
 async function licenseGate() {
-    if (process.argv.includes('--fingerprint')) {
-        console.log('\n  Fingerprint mesin ini:');
-        console.log('  ' + lic.displayFingerprint());
-        console.log('  Kirim ke owner untuk dibuatkan license key.\n');
-        process.exit(0);
-    }
-
     // 1. Argumen --key <key> (dipakai PM2 / systemd / docker)
     const keyArgIdx = process.argv.indexOf('--key');
     if (keyArgIdx !== -1 && process.argv[keyArgIdx + 1]) {
-        const r = lic.verifyKey(process.argv[keyArgIdx + 1].trim());
+        const key = process.argv[keyArgIdx + 1].trim();
+        const r = lic.verifyKey(key);
         if (!r.ok) {
-            console.error(`\n  ⛔ LICENSE KEY DITOLAK [${r.reason}]: ${r.message}`);
-            console.error('  Cek key dari owner, atau lihat fingerprint: node index.js --fingerprint\n');
+            boxHeader('LICENSE KEY DITOLAK', 'Periksa key yang diberikan owner.');
+            console.log('  ' + paint('Alasan', C.gray) + ': ' + paint(r.message, C.red) + '  [' + r.reason + ']\n');
             process.exit(1);
         }
-        lic.saveKey(process.argv[keyArgIdx + 1].trim());
-        printLicense(r);
+        lic.saveKey(key);
+        printLicense(r, 'argumen --key');
         return;
     }
 
     // 2. Key dari env / file yang tersimpan
     let r = lic.check();
-    if (r.ok) { printLicense(r); return; }
-
-    // 3. Kalau ada key lama tapi invalid/expired, beri tahu dulu
-    const stored = process.env.MZ_LICENSE_KEY || lic.readKeyFile();
-    if (stored) {
-        console.error(`\n  ⚠️  Key tersimpan tidak aktif [${r.reason}]: ${r.message}`);
+    if (r.ok) {
+        printLicense(r, process.env.MZ_LICENSE_KEY ? 'environment' : '.license-key');
+        return;
     }
 
-    // 4. Minta key lewat console
-    console.log('\n  ─────────────────────────────────────────────────────────');
-    console.log('  🔑 MANZXYMD FREE — BUTUH LICENSE KEY');
-    console.log('  Belum ada key aktif. Masukkan license key dari owner.');
-    console.log('  Fingerprint mesin ini: ' + lic.displayFingerprint());
-    console.log('  (Kirim fingerprint ke owner bila belum punya key)');
-    console.log('  ─────────────────────────────────────────────────────────');
+    // 3. Prompt interaktif
+    const stored = process.env.MZ_LICENSE_KEY || lic.readKeyFile();
+    boxHeader('MANZXYMD FREE — LISENSI', 'Masukkan license key dari owner untuk menjalankan bot.');
+    if (stored) {
+        console.log(row(paint('Key tersimpan tidak aktif: ' + r.message, C.yellow)));
+        console.log(lineBot);
+    }
+    console.log('');
+    console.log('  ' + paint('Format', C.gray) + ': MZF-<payload>.<signature>');
+    console.log('  ' + paint('Bantuan', C.gray) + ': minta key ke owner, lalu tempel di bawah.\n');
 
     for (let attempt = 1; attempt <= 3; attempt++) {
-        const input = String(await question(`  License key (percobaan ${attempt}/3): `)).trim();
-        if (!input) { console.log('  Key kosong.\n'); continue; }
+        const input = String(await question(paint('  Key [' + attempt + '/3]: ', C.cyan))).trim();
+        if (!input) { console.log('  ' + paint('Key kosong, coba lagi.', C.yellow) + '\n'); continue; }
         r = lic.verifyKey(input);
         if (r.ok) {
             lic.saveKey(input);
             closeQuestion();
-            console.log('  ✅ Key valid. Tersimpan di .license-key\n');
-            printLicense(r);
+            printLicense(r, 'disimpan ke .license-key');
             return;
         }
-        console.error(`  ❌ Ditolak [${r.reason}]: ${r.message}\n`);
+        console.log('  ' + paint('✗ Ditolak', C.red) + '  ' + paint(r.message, C.gray) + '  [' + r.reason + ']\n');
     }
 
     closeQuestion();
-    console.error('\n  ⛔ 3x gagal — bot tidak dijalankan.');
-    console.error('  Dapatkan key dari owner, lalu jalankan: node index.js --key <key>\n');
+    console.log(lineTop);
+    console.log(center(paint('LISENSI GAGAL', C.bold + C.red)));
+    console.log(row(paint('3 percobaan habis. Bot tidak dijalankan.', C.gray)));
+    console.log(lineBot);
+    console.log('  ' + paint('Cara lain', C.gray) + ': node index.js --key <key>\n');
     process.exit(1);
 }
 
 // Gate async (bisa menunggu input console). Boot dijalankan setelah lolos.
 const licenseReady = licenseGate().catch((err) => {
-    console.error('\n  ⛔ GAGAL MEMPROSES LISENSI:', err.message || err);
+    console.error('\n  ' + paint('GAGAL MEMPROSES LISENSI: ' + (err.message || err), C.red) + '\n');
     process.exit(1);
 });
 

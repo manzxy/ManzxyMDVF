@@ -994,35 +994,36 @@ Catatan operasional:
 
 Edisi gratis **wajib memakai license key dari owner** untuk bisa dijalankan. Tanpa key
 valid, bot langsung berhenti saat start. Key ditandatangani dengan **Ed25519** oleh bot
-ManzxyBase (penerbit), terikat pada **fingerprint mesin** dan tanggal kedaluwarsa.
+ManzxyBase (penerbit) dan punya **durasi yang bisa diatur owner**.
 
 > [!IMPORTANT]
 > Script ini hanya berisi **public key** penerbit. **Private key tidak ikut didistribusikan**,
-> sehingga key tidak bisa dibuat atau dipalsukan sendiri. Pencabutan key dicatat di
-> server penerbit; untuk menolak key yang dicabut pada mesin yang sudah terpasang,
-> perbarui daftar `.license-revoked.json` di mesin tersebut (atau minta key baru).
+> sehingga key tidak bisa dibuat atau dipalsukan sendiri. **Key tidak diikat ke mesin** —
+> cukup key, tidak perlu fingerprint. Pencabutan key dicatat di server penerbit; untuk
+> menolak key yang dicabut pada mesin yang sudah terpasang, perbarui
+> `.license-revoked.json` di mesin tersebut (atau minta key baru).
 
-**Format key:** `MZF-<payload>.<signature>` — payload berisi customer, fingerprint, expiry, tier, dan id.
+**Format key:** `MZF-<payload>.<signature>` — payload berisi customer, expiry, tier, dan id.
 
 ### Alur lisensi (owner → user)
 
 ```
-owner buat key (.createkey)  →  key dikirim ke user  →  user tempel di console saat start bot
+owner buat key (.createkey <nama> <durasi>)  →  key dikirim ke user  →  user tempel di console saat start
 ```
 
 **Untuk user:**
 
-1. Dapatkan fingerprint mesin (kirim ke owner bila belum punya key):
-   ```bash
-   node index.js --fingerprint
-   ```
+1. Minta license key ke owner (cukup minta, tidak perlu kirim fingerprint).
 2. Owner menerbitkan key lewat `.createkey` di bot ManzxyBase dan mengirimkannya ke Anda.
 3. Jalankan bot, lalu **tempel key di console** saat diminta:
    ```bash
    node index.js
-   # 🔑 MANZXYMD FREE — BUTUH LICENSE KEY
-   # License key (percobaan 1/3): <tempel MZF-... di sini, Enter>
-   # ✅ Key valid. Tersimpan di .license-key
+   # ╭──────────────────────────────────────────────────────╮
+   # │         MANZXYMD FREE — LISENSI                     │
+   # │ Masukkan license key dari owner untuk menjalankan bot.│
+   # ╰──────────────────────────────────────────────────────╯
+   # Key [1/3]: <tempel MZF-... di sini, Enter>
+   # ✓ LISENSI AKTIF
    ```
    Key akan disimpan otomatis, jadi start berikutnya langsung jalan tanpa input ulang.
 
@@ -1042,18 +1043,36 @@ node scripts/license.js install MZF-xxxx.yyyy
 Salah key: prompt memberi 3 kali percobaan, lalu bot berhenti. Cek status: `.license`
 di bot, atau `node scripts/license.js status`.
 
+### Durasi key (diatur owner)
+
+Owner menentukan durasi saat membuat key lewat `.createkey <nama> <durasi>`:
+
+| Durasi | Arti |
+| --- | --- |
+| `30` | 30 hari (angka polos = hari) |
+| `0` atau `lifetime` | Seumur hidup |
+| `90m` | 90 menit |
+| `12h` | 12 jam |
+| `7d` | 7 hari |
+| `1w` | 1 minggu |
+| `1mo` | 1 bulan (30 hari) |
+| `1y` | 1 tahun (365 hari) |
+
+Satuan juga bisa Bahasa Indonesia: `2jam`, `3hari`, `1minggu`, `1bulan`, `1tahun`.
+
+Contoh: `.createkey "Toko A" 30` · `.createkey "Toko B" 12h` · `.createkey "Toko C" 0`
+
 ### Command lisensi di bot free (khusus Root Owner)
 
 | Command | Fungsi |
 | --- | --- |
 | `.setkey <key>` | Pasang license key dari owner |
 | `.delkey` | Hapus key yang tersimpan |
-| `.license` | Lihat status lisensi & fingerprint |
-| `.fingerprint` | Lihat fingerprint mesin untuk dimintakan key |
+| `.license` | Lihat status lisensi |
 
 > [!NOTE]
 > File `.license-key` dan `.license-revoked.json` sudah masuk `.gitignore`.
-> Jangan pernah membagikan key Anda ke pihak lain — key terikat fingerprint mesin.
+> Jangan pernah membagikan key Anda ke pihak lain.
 
 ---
 
