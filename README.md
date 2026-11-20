@@ -12,7 +12,7 @@ pembayaran QRIS, permainan, serta panel web dengan telemetri server.
 ![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A518-339933?logo=node.js&logoColor=white)
 ![zapo-js](https://img.shields.io/badge/zapo-js-v1.12.0-25D366?logo=whatsapp&logoColor=white)
 ![Module](https://img.shields.io/badge/module-CommonJS-f7df1e)
-![Version](https://img.shields.io/badge/version-8.11.1-blue)
+![Version](https://img.shields.io/badge/version-8.12.0-blue)
 ![Plugins](https://img.shields.io/badge/plugins-102%20file%20%C2%B7%20338%20command-FF5DA2)
 ![Panel](https://img.shields.io/badge/panel-neobrutalism-3D8BFF)
 ![License](https://img.shields.io/badge/license-Free%20%2B%20license--ready-orange)
@@ -1227,5 +1227,5 @@ Dependensi pihak ketiga memiliki lisensinya masing-masing.
 - [Node.js](https://nodejs.org/), [sharp](https://sharp.pixelplumbing.com/), [@napi-rs/canvas](https://github.com/Brooooooklyn/canvas).
 
 <div align="center">
-<sub>ManzxyMD v8.11.1 — engine zapo-js 1.12.0 — dibuat untuk pengelolaan akun & grup milik sendiri.</sub>
+<sub>ManzxyMD v8.12.0 — engine zapo-js 1.12.0 — dibuat untuk pengelolaan akun & grup milik sendiri.</sub>
 </div>
