@@ -2,24 +2,28 @@ const readline = require('readline');
 const fs = require('fs');
 const path = require('path');
 
-/* ── License check (soft by default). Jalan SEBELUM modul lain. ──
- * Tanpa key: bot tetap jalan + warning. Set MZ_LICENSE_REQUIRED=1 untuk memaksa. */
+/* ── License gate HARD. Jalan SEBELUM modul lain. ──
+ * Bot TIDAK bisa berjalan tanpa key valid dari owner.
+ * Kecuali argumen --fingerprint: tampilkan fingerprint lalu keluar (untuk minta key). */
+const lic = require('./lib/core/license');
+
+if (process.argv.includes('--fingerprint')) {
+    console.log('\n  Fingerprint mesin ini:');
+    console.log('  ' + lic.displayFingerprint());
+    console.log('  Kirim ke owner untuk dibuatkan license key.\n');
+    process.exit(0);
+}
+
 try {
-    const lic = require('./lib/core/license');
     const r = lic.enforce();
-    if (r.ok) {
-        console.log(`\n  🔐 Lisensi aktif — ${r.payload?.c || 'customer'} (${r.payload?.t || 'free'})`);
-        console.log(`     Berlaku s/d: ${r.payload?.e ? new Date(r.payload.e).toISOString() : 'selamanya'}\n`);
-    } else if (r.required) {
-        throw new Error(`[${r.reason}] ${r.message} — MZ_LICENSE_REQUIRED=1`);
-    } else {
-        console.log(`\n  ⚠️  Lisensi tidak aktif [${r.reason}]: ${r.message}`);
-        console.log('     Bot tetap berjalan (mode soft). Pasang key lewat .setkey <key> atau MZ_LICENSE_KEY.\n');
-    }
+    if (!r.ok) throw new Error(`[${r.reason}] ${r.message}`);
+    console.log(`\n  🔐 Lisensi aktif — ${r.payload?.c || 'customer'} (${r.payload?.t || 'free'})`);
+    console.log(`     ID: ${r.payload?.j || '-'} | Berlaku s/d: ${r.payload?.e ? new Date(r.payload.e).toISOString() : 'selamanya'}\n`);
 } catch (err) {
-    console.error('\n  ⛔ LISENSI WAJIB TIDAK VALID — bot tidak dijalankan.');
+    console.error('\n  ⛔ LISENSI TIDAK VALID — bot free tidak dijalankan.');
     console.error('  ' + String(err.message || err).split('\n').join('\n  '));
-    console.error('  Hubungi penyedia lisensi.\n');
+    console.error('  Fingerprint mesin ini: ' + lic.displayFingerprint());
+    console.error('  Kirim fingerprint ke owner, pasang key lewat .setkey <key> atau MZ_LICENSE_KEY, lalu restart.\n');
     process.exit(1);
 }
 

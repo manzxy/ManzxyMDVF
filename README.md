@@ -992,52 +992,52 @@ Catatan operasional:
 
 ## Sistem Lisensi
 
-Edisi gratis **dapat dipakai tanpa lisensi** (mode *soft*: bot tetap jalan, hanya muncul
-pemberitahuan saat boot). Bila pemilik ingin mengunci pemakaian, tersedia mekanisme
-license key berbasis **HMAC-SHA256** yang terikat pada **fingerprint mesin** dan tanggal
-kedaluwarsa.
-
-| Mode | Cara aktifkan | Perilaku tanpa / dengan key invalid |
-| --- | --- | --- |
-| **Soft** (default) | tanpa variabel khusus | Bot jalan + warning di log. |
-| **Hard** | `MZ_LICENSE_REQUIRED=1` | Bot **berhenti** bila key tidak ada/invalid/expired. |
-
-**Format key:** `MZF-<payload>.<signature>` — payload berisi customer, fingerprint, expiry, dan tier.
-
-### Memasang key (sebagai user)
-
-Tiga cara, pilih salah satu:
-
-```bash
-# 1. Lewat WhatsApp (Root Owner):
-#    .setkey MZF-xxxx.yyyy
-
-# 2. Lewat CLI:
-node scripts/license.js install MZF-xxxx.yyyy
-
-# 3. Lewat environment (.env):
-MZ_LICENSE_KEY=MZF-xxxx.yyyy
-```
-
-Cek status: `.license` di bot, atau `node scripts/license.js status`.
-Lihat fingerprint mesin: `.fingerprint` di bot, atau `node scripts/license.js fingerprint`.
-
-### Menerbitkan key (sebagai penerbit lisensi)
-
-```bash
-node scripts/license.js secret                                  # buat .license-secret (sekali)
-node scripts/license.js fingerprint                             # fingerprint mesin target
-node scripts/license.js issue "Nama Customer" 30 <fingerprint>  # key 30 hari
-node scripts/license.js issue "Nama Customer" 0 <fingerprint>   # key lifetime
-node scripts/license.js verify MZF-xxxx.yyyy                    # cek kevalidan key
-```
+Edisi gratis **wajib memakai license key dari owner** untuk bisa dijalankan. Tanpa key
+valid, bot langsung berhenti saat start. Key ditandatangani dengan **Ed25519** oleh bot
+ManzxyBase (penerbit), terikat pada **fingerprint mesin** dan tanggal kedaluwarsa.
 
 > [!IMPORTANT]
-> `.license-secret` adalah rahasia penerbit. Jangan pernah di-commit atau dibagikan.
-> `.license-key` dan `.license-secret` sudah masuk `.gitignore`. Key yang terikat fingerprint
-> hanya bisa dipakai pada mesin yang sesuai.
+> Script ini hanya berisi **public key** penerbit. **Private key tidak ikut didistribusikan**,
+> sehingga key tidak bisa dibuat atau dipalsukan sendiri. Key yang dicabut owner juga
+> langsung ditolak.
 
-Command terkait: `.setkey`, `.delkey`, `.license`, `.fingerprint` (khusus Root Owner).
+**Format key:** `MZF-<payload>.<signature>` — payload berisi customer, fingerprint, expiry, tier, dan id.
+
+### Cara mendapatkan key
+
+1. Dapatkan fingerprint mesin Anda:
+   ```bash
+   node index.js --fingerprint       # atau: node scripts/license.js fingerprint
+   ```
+2. Kirim fingerprint tersebut ke owner (Manzxy).
+3. Owner menerbitkan key lewat `.createkey` di bot ManzxyBase.
+4. Pasang key yang diterima (pilih salah satu):
+   ```bash
+   # Lewat WhatsApp (Root Owner di bot free):
+   .setkey MZF-xxxx.yyyy
+
+   # Lewat CLI:
+   node scripts/license.js install MZF-xxxx.yyyy
+
+   # Lewat environment (.env):
+   MZ_LICENSE_KEY=MZF-xxxx.yyyy
+   ```
+5. Restart bot.
+
+Cek status: `.license` di bot, atau `node scripts/license.js status`.
+
+### Command lisensi di bot free (khusus Root Owner)
+
+| Command | Fungsi |
+| --- | --- |
+| `.setkey <key>` | Pasang license key dari owner |
+| `.delkey` | Hapus key yang tersimpan |
+| `.license` | Lihat status lisensi & fingerprint |
+| `.fingerprint` | Lihat fingerprint mesin untuk dimintakan key |
+
+> [!NOTE]
+> File `.license-key` dan `.license-revoked.json` sudah masuk `.gitignore`.
+> Jangan pernah membagikan key Anda ke pihak lain — key terikat fingerprint mesin.
 
 ---
 
