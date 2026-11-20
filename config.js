@@ -42,7 +42,6 @@ module.exports = {
     limit: { daily: 0 },                                                   // EDISI GRATIS: tanpa limit harian
     premium: { price: { perDay: 2000, perHour: 1000 } },
     jadibot: { max: 10, price: { perDay: 1000, packages: { '7d': 5000, '30d': 15000, '90d': 35000 } } },
-    sewa: { enforce: false, price: { perDay: 700, minDays: 2, packages: { '7d': 5000, '30d': 15000, '90d': 35000 } } },
 
     /* Tampilan */
     footerText: 'ManzxyMD',

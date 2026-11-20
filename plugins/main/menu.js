@@ -29,7 +29,7 @@ const meta = (cat) => config.categoryMeta[cat] || { icon: '📁', label: String(
 const TIPS = [
     'Ketik *.menu <kategori>* untuk melihat satu kategori saja.',
     'Ingin limit tanpa batas? Coba *.buyprem* — bisa per jam sampai tahunan.',
-    'Bot bisa dipasang di grupmu lewat *.sewabot <link grup>*.',
+    'Mau bot sendiri? Coba *.jadibot <nomor> <durasi>*.',
     'Cek status & sisa limitmu kapan saja dengan *.profile*.'
 ];
 const getRandomTip = () => TIPS[Math.floor(Date.now() / 60000) % TIPS.length];

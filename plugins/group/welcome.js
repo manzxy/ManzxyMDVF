@@ -9,7 +9,6 @@ const fs = require('fs');
 const path = require('path');
 const config = require('../../config');
 const db = require('../../lib/data/database');
-const rental = require('../../lib/billing/rental');
 const { button } = require('../../lib/wa/rich');
 const { participantJid, resolveJid, isLid } = require('../../lib/core/jid');
 const { numberOf, formatDateTime, truncate } = require('../../lib/core/utils');
@@ -294,7 +293,6 @@ async function onParticipantsUpdate(sock, ev) {
     const s = group.settings;
     if (action === 'add' ? !s.welcome : !s.bye) return;
     if (group.banned.active || s.mute) return;
-    if (config.sewa.enforce && !sock.isJadibot && !rental.isActive(group)) return;
 
     let meta = {};
     try { meta = (await sock.groupMetadata(gid)) || {}; } catch (err) { logDebug('WELCOME', `groupMetadata: ${err.message}`); }

@@ -14,7 +14,6 @@ const { printBanner, printReady, logInfo, logSuccess, logWarn, logError, reasonN
 const { getCachedGroupMetadata, bindGroupCacheListeners } = require('./lib/core/jid');
 const jadibot = require('./lib/bot/jadibotManager');
 const payment = require('./lib/billing/payment');
-const rental = require('./lib/billing/rental');
 const renewal = require('./lib/billing/renewal');
 const cleaner = require('./lib/bot/cleaner');
 const { handleIncomingMessage, bindEvents, getStoredMessage } = require('./handler/index');
@@ -39,7 +38,7 @@ async function shutdown(signal) {
     if (shuttingDown) return;
     shuttingDown = true;
     logWarn('SHUTDOWN', `${signal} diterima, menyimpan data...`);
-    try { await jadibot.shutdownAll(); payment.stop(); rental.stop(); renewal.stop(); cleaner.stop(); } catch {}
+    try { await jadibot.shutdownAll(); payment.stop(); renewal.stop(); cleaner.stop(); } catch {}
     try { currentSock?.ws?.close(); } catch {}
     db.saveSync();
     keepAlive.stop();
@@ -115,7 +114,6 @@ async function startBotZapo() {
     attachRichHelpers(sock);
     bindGroupCacheListeners(sock);
     payment.setSock(sock);
-    rental.setSock(sock);
     renewal.setSock(sock);
     bindEvents(sock, { isActive: () => currentSock === sock });
 
@@ -136,7 +134,6 @@ keepAlive.start();
 if (keepAlive.server) webPanel.attachTo(keepAlive.server);
 else webPanel.start(config.port);
 payment.start({ handleIncomingMessage });
-rental.start();
 renewal.start({ handleIncomingMessage });
 cleaner.start();
 startBotZapo().catch((err) => { logError('START', err); process.exit(1); });

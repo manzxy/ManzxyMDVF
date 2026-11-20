@@ -31,14 +31,14 @@ test('promo jadibot dibatasi slot, diskon tiap produk tersimpan terpisah', () =>
     db.removeJadibot('628123456789');
     promotions.setFreeJadibot(false);
     assert.throws(() => promotions.setFreeSlots(-1));
-    promotions.setDiscount('rent', 20);
-    assert.equal(promotions.quote('rent', 5000).price, 4000);
+    promotions.setDiscount('prem', 20);
+    assert.equal(promotions.quote('prem', 5000).price, 4000);
     assert.equal(promotions.discount('jadibot'), 0);
-    assert.equal(db.data.settings.promotions.discounts.rent, 20);
-    assert.equal(promotions.quote('rent', 5000).basePrice, 5000);
-    assert.throws(() => promotions.setDiscount('rent', 100));
-    assert.throws(() => promotions.setDiscount('rent', -1));
-    assert.equal(promotions.quote('rent', 1).price, 1);
+    assert.equal(db.data.settings.promotions.discounts.prem, 20);
+    assert.equal(promotions.quote('prem', 5000).basePrice, 5000);
+    assert.throws(() => promotions.setDiscount('prem', 100));
+    assert.throws(() => promotions.setDiscount('prem', -1));
+    assert.equal(promotions.quote('prem', 1).price, 1);
 });
 
 test('tagihan baru menggunakan harga diskon dan menyimpan snapshot promo', async () => {
@@ -60,12 +60,9 @@ test('tagihan baru menggunakan harga diskon dan menyimpan snapshot promo', async
         promotions.setDiscount('prem', 10);
         const second = await payment.createRenewOrder({ kind: 'prem', target: '628222222222', owner: '628222222222', chat: 'test', durationMs: 86400000, price: 2000 });
         assert.equal(second.order.price, 1800);
-        promotions.setDiscount('rent', 20);
-        const third = await payment.createRentOrder({ groupJid: '123@g.us', owner: '628222222222', chat: 'test', durationMs: 7 * 86400000 });
-        assert.equal(third.order.price, 4000);
-        const fourth = await payment.createPremOrder({ target: '628333333333', owner: '628222222222', chat: 'test', durationMs: 86400000, price: 2000 });
-        assert.equal(fourth.order.price, 1800);
-        assert.deepEqual(sent, [3750, 1800, 4000, 1800]);
+        const third = await payment.createPremOrder({ target: '628333333333', owner: '628222222222', chat: 'test', durationMs: 86400000, price: 2000 });
+        assert.equal(third.order.price, 1800);
+        assert.deepEqual(sent, [3750, 1800, 1800]);
     } finally {
         axios.post = originalPost;
         payment.stop();

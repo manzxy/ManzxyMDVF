@@ -271,7 +271,7 @@ html[data-theme="dark"] .topbar { background: rgba(17,26,46,.85); }
 }
 
 /* ═══════════ BANNER MASA AKTIF ═══════════
-   Tampil di atas konten saat jadibot/premium/sewa habis ≤ 7 hari.
+   Tampil di atas konten saat jadibot/premium habis ≤ 7 hari.
    Warna kuning = masih ada waktu, merah = ≤ 2 hari. */
 
 .expire-banner {

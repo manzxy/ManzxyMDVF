@@ -6,7 +6,7 @@
 
 **WhatsApp Bot berbasis [Baileys](https://github.com/WhiskeySockets/Baileys) & Node.js — arsitektur plugin, CommonJS.**
 
-Bot WhatsApp modular dengan sistem plugin, jadibot (multi-sesi), sewa grup, langganan premium,
+Bot WhatsApp modular dengan sistem plugin, jadibot (multi-sesi), langganan premium,
 pembayaran QRIS, permainan, serta panel web dengan telemetri server.
 
 ![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A518-339933?logo=node.js&logoColor=white)
@@ -75,7 +75,7 @@ penggantian, atau penghapusan fitur tanpa menyentuh `index.js`.
 
 - **Plugin-first** — setiap kategori fitur adalah folder di `plugins/`.
 - **Jadibot multi-sesi** — tautkan beberapa akun WhatsApp tambahan dari dalam chat.
-- **Monetisasi** — premium, sewa grup, jadibot, dan tagihan QRIS lewat KiPay.
+- **Monetisasi** — premium, jadibot, dan tagihan QRIS lewat KiPay.
 - **Hot reload** — supervisor `scripts/dev.js` memantau perubahan source dan memulai ulang proses.
 - **Persistensi JSON** — database tertunda dengan backup `.bak` otomatis.
 - **UI kaya** — tombol native, carousel, polling, dan `externalAdReply`.
@@ -124,7 +124,7 @@ Sebelum menautkan akun, **wajib** menyesuaikan `config.js`:
 
 `config.js` menyimpan pengaturan utama. Kunci yang tidak didefinisikan dilengkapi otomatis oleh
 `lib/configDefaults.js` tanpa menimpa nilai yang sudah ada — sehingga pembaruan bot dapat menambahkan
-kunci baru (mis. `sewa`, `kipay`) tanpa mengganti config lama.
+kunci baru (mis. `kipay`, `renewal`) tanpa mengganti config lama.
 
 ### Pengaturan utama
 
@@ -138,7 +138,6 @@ kunci baru (mis. `sewa`, `kipay`) tanpa mengganti config lama.
 | `limit.daily` | Kuota limit harian pengguna biasa. |
 | `premium.price` | Harga langganan premium (`perDay`, `perHour`). |
 | `jadibot` | Batas & paket harga bot tambahan. |
-| `sewa` | Paket sewa grup; `sewa.enforce` membatasi layanan pada grup penyewa. |
 | `kipay.api_key` | Kredensial KiPay untuk tagihan QRIS. Gunakan `KIPAY_API_KEY` dari env. Endpoint: `https://api.kipay.biz.id/api/pay` (lihat `lib/payment.js`). |
 | `kipay.pollIntervalSec` | Interval poller status transaksi (detik, minimal 3). |
 | `replyStyle` | `forward` (kartu dokumen + saluran), `ad` (`externalAdReply`), `plain` (teks). |
@@ -223,7 +222,7 @@ Beberapa perintah mensyaratkan owner, premium, admin grup, atau fitur pembayaran
 | --- | --- | --- |
 | **Umum** | `.menu`, `.profile`, `.daftar`, `.afk` | Menu, profil, pendaftaran, status tidak aktif. |
 | **Grup** | `.welcome`, `.antilink`, `.tagall`, `.hidetag`, `.kick`, `.detect` | Sambutan, moderasi, deteksi perubahan. Tindakan tertentu butuh admin bot/pengirim. |
-| **Jadibot & Sewa** | `.jadibot`, `.listjadibot`, `.stopjadibot`, `.sewabot`, `.listsewa` | Sesi bot tambahan dan sewa grup. |
+| **Jadibot** | `.jadibot`, `.listjadibot`, `.stopjadibot` | Sesi bot tambahan. |
 | **Premium & Pembayaran** | `.buyprem`, `.perpanjang`, `.batalbayar` | Pembelian, perpanjangan, pengelolaan tagihan. Otomatisasi pembayaran bergantung KiPay. |
 | **Alat & Unduhan** | `.calc`, `.qr`, `.s`, `.toimg`, `.ytsearch`, `.play`, `.tiktok`, `.bing` | Pemrosesan lokal dan layanan jaringan. `.s` menerima gambar atau GIF/WebP (sebagai dokumen), bukan MP4. |
 | **Permainan** | `.daily`, `.saldo`, `.slot`, `.top` | Koin, klaim harian, peringkat. |
@@ -233,7 +232,7 @@ Beberapa perintah mensyaratkan owner, premium, admin grup, atau fitur pembayaran
 ### Kategori plugin
 
 `ai` · `downloader` · `game` · `group` · `info` · `interactive` · `jadibot` ·
-`main` · `owner` · `plugin` · `premium` · `rpg` · `sewa` · `tools`
+`main` · `owner` · `plugin` · `premium` · `rpg` · `tools`
 
 ### Sistem RPG
 
@@ -485,7 +484,6 @@ ManzxyBase/
 │   ├── projectWatcher.js    # pemantau direktori proyek
 │   ├── jadibotManager.js    # pengelolaan sesi jadibot
 │   ├── payment.js           # integrasi KiPay/QRIS
-│   ├── rental.js            # sewa grup
 │   ├── renewal.js           # perpanjangan & pengingat
 │   ├── economy.js           # koin, limit, saldo
 │   ├── promotions.js        # promo & diskon

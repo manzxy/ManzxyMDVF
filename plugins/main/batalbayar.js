@@ -6,7 +6,7 @@ module.exports = {
     command: ['batalbayar', 'batal', 'cekbayar', 'tagihan'],
     category: 'main',
     order: 4,
-    description: 'Batalkan / cek tagihan pembayaran (sewa, premium, jadibot)',
+    description: 'Batalkan / cek tagihan pembayaran (premium, jadibot)',
     usage: '.batalbayar [id]',
     async execute(sock, m, ctx) {
         const { from, command, args, senderNumber, isRootOwner, prefix, config, reply } = ctx;
@@ -22,7 +22,7 @@ module.exports = {
                     title: '❌ TAGIHAN DIBATALKAN',
                     body: `${payment.describeOrder(r.order)}\n\nTagihan sudah dibatalkan. *Jangan membayar QR yang lama.* Kamu bisa membuat tagihan baru kapan saja.`,
                     footer: config.footerText
-                }, [button.quick('⭐ Beli Premium', `${prefix}buyprem`), button.quick('🏷️ Sewa Bot', `${prefix}sewabot`)], m);
+                }, [button.quick('⭐ Beli Premium', `${prefix}buyprem`), button.quick('🤖 Jadibot', `${prefix}jadibot`)], m);
             }
             const o = payment.ownOrders(senderNumber).find((x) => x.trxId === id) || (isRootOwner ? Object.values(ctx.db.data.orders).find((x) => x.trxId === id) : null);
             if (!o) return await reply('❌ Tagihan tidak ditemukan.');

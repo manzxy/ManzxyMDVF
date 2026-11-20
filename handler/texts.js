@@ -17,7 +17,6 @@ const TEXT = {
     busy: '⏳ Bot sedang sibuk, coba lagi sebentar.',
     mediaRecovering: 'Koneksi media sedang disambung ulang otomatis. Coba kirim ulang perintahmu dalam beberapa detik.',
     commandError: (command, message) => `❌ *Terjadi error pada command .${command}*\n\`\`\`${String(message).slice(0, 300)}\`\`\``,
-    sewaRequired: (prefix) => `⛔ Grup ini belum menyewa bot.\nKetik *${prefix}sewabot* untuk menyewa.`,
 
     /* ── limit ── */
     limitTitle: '🎟️ LIMIT HARIAN HABIS',

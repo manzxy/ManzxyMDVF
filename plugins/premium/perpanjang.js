@@ -1,9 +1,8 @@
 /**
- * PERPANJANG & UPGRADE WAKTU — Premium, Sewa Bot, Jadibot (satu perintah untuk ketiganya).
+ * PERPANJANG & UPGRADE WAKTU — Premium & Jadibot (satu perintah untuk keduanya).
  *
  *   .perpanjang                          → daftar langgananmu (button list)
  *   .perpanjang prem                     → pilih durasi premium
- *   .perpanjang sewa [jid-grup]          → pilih durasi sewa (di grup: grup itu)
  *   .perpanjang jadibot [nomor]          → pilih durasi jadibot
  *   .perpanjang <jenis> [target] <durasi> → langsung buat tagihan QRIS (mis. 30d, 1y, 1d12h)
  *
@@ -20,16 +19,14 @@ const isDuration = (t) => parseDuration(t) > 0;
 
 function resolveTarget(kind, tokens, ctx) {
     if (kind === 'prem') return ctx.senderNumber;                       // premium hanya untuk diri sendiri
-    const t = tokens.find((x) => (kind === 'rent' ? /@g\.us$/.test(x) : /^\+?[\d\s-]{8,}$/.test(x) && !isDuration(x)));
-    if (t) return kind === 'rent' ? t : normalizePhone(t);
-    if (kind === 'rent' && ctx.isGroup) return ctx.from;
+    const t = tokens.find((x) => /^\+?[\d\s-]{8,}$/.test(x) && !isDuration(x));
+    if (t) return normalizePhone(t);
     const mine = renewal.listOwned(ctx.senderNumber, ctx.isRootOwner).filter((e) => e.kind === kind);
     return mine.length === 1 ? mine[0].target : '';
 }
 
 const howToBuy = (kind, prefix) => ({
     prem: `Beli premium dulu: *${prefix}buyprem*`,
-    rent: `Sewa dulu: *${prefix}sewabot <link grup>*`,
     jadibot: `Buat dulu: *${prefix}jadibot <nomor> <durasi>*`
 }[kind]);
 
@@ -39,9 +36,8 @@ module.exports = {
     category: 'premium',
     order: 3,
     limit: 0,
-    sewaExempt: true,            // tetap bisa dipakai di grup yang masa sewanya habis (mode enforce)
-    description: 'Perpanjang / tambah waktu Premium, Sewa Bot & Jadibot — QRIS langsung, masa baru ditambahkan ke sisa waktu',
-    usage: '.perpanjang [prem|sewa|jadibot] [target] [durasi]',
+    description: 'Perpanjang / tambah waktu Premium & Jadibot — QRIS langsung, masa baru ditambahkan ke sisa waktu',
+    usage: '.perpanjang [prem|jadibot] [target] [durasi]',
     async execute(sock, m, ctx) {
         const { from, command, args, senderNumber, isOwner, isRootOwner, isPremium, isGroup, isAdmin, prefix, config, reply } = ctx;
         const upgrade = command === 'upgrade' || command === 'tambahwaktu';
@@ -54,7 +50,7 @@ module.exports = {
         if (!args[0]) {
             const mine = renewal.listOwned(senderNumber, isRootOwner);
             if (!mine.length) {
-                return await reply(`Kamu belum punya langganan yang bisa diperpanjang.\n\n• Premium: *${prefix}buyprem*\n• Sewa bot: *${prefix}sewabot <link grup>*\n• Jadibot: *${prefix}jadibot <nomor> <durasi>*`);
+                return await reply(`Kamu belum punya langganan yang bisa diperpanjang.\n\n• Premium: *${prefix}buyprem*\n• Jadibot: *${prefix}jadibot <nomor> <durasi>*`);
             }
             const now = Date.now();
             const rows = mine.slice(0, 10).map((e) => ({
@@ -72,23 +68,20 @@ module.exports = {
         }
 
         const kind = renewal.normalizeKind(args[0]);
-        if (!kind) return await reply(`❌ Jenis tidak dikenal. Pakai: *${prefix}perpanjang prem*, *${prefix}perpanjang sewa*, atau *${prefix}perpanjang jadibot*.`);
+        if (!kind) return await reply(`❌ Jenis tidak dikenal. Pakai: *${prefix}perpanjang prem* atau *${prefix}perpanjang jadibot*.`);
         const tokens = args.slice(1);
         const K = renewal.KINDS[kind];
 
         const target = resolveTarget(kind, tokens, ctx);
         if (!target) {
-            return await reply(kind === 'rent'
-                ? `❌ Tentukan grupnya: ketik *${prefix}perpanjang sewa* di dalam grup, atau pilih dari *${prefix}perpanjang*.`
-                : `❌ Tentukan nomor jadibot: *${prefix}perpanjang jadibot 628xxx*, atau pilih dari *${prefix}perpanjang*.`);
+            return await reply(`❌ Tentukan nomor jadibot: *${prefix}perpanjang jadibot 628xxx*, atau pilih dari *${prefix}perpanjang*.`);
         }
 
         const ent = renewal.getEntity(kind, target);
         if (!ent) return await reply(`❌ ${K.label} tidak ditemukan.\n${howToBuy(kind, prefix)}`);
         if (!renewal.canManage(ent, { senderNumber, isRootOwner, isAdmin, isGroup, from })) {
             return await reply(kind === 'prem' ? '❌ Premium hanya bisa diperpanjang oleh pemiliknya. Untuk hadiah ke orang lain: *.buyprem <nomor> <durasi>*.'
-                : kind === 'rent' ? `❌ Hanya penyewa (+${ent.owner || '-'}), admin grup, atau Root Owner yang bisa memperpanjang sewa ini.`
-                    : `❌ Hanya pemilik jadibot (+${ent.owner || '-'}) atau Root Owner yang bisa memperpanjang ini.`);
+                : `❌ Hanya pemilik jadibot (+${ent.owner || '-'}) atau Root Owner yang bisa memperpanjang ini.`);
         }
         if (ent.permanent) return await reply(`♾️ ${ent.label} berstatus *permanen* — tidak perlu diperpanjang.`);
         if (kind === 'prem' && isOwner) return await reply('👑 Owner sudah *UNLIMITED* — tidak perlu premium.');

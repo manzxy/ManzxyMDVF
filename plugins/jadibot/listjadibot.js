@@ -35,7 +35,7 @@ module.exports = {
                 `   • Mode   : ${j.selfMode ? 'Self' : 'Public'}\n` +
                 (j.uptime ? `   • Uptime : ${runtime(j.uptime)}\n` : '') +
                 (j.attempts ? `   • Reconnect : ${j.attempts}x\n` : '') +
-                `   • Sewa   : ${j.expire ? `s/d ${formatDateTime(new Date(j.expire))}` : 'Permanen'}\n\n`;
+                `   • Aktif  : ${j.expire ? `s/d ${formatDateTime(new Date(j.expire))}` : 'Permanen'}\n\n`;
         });
         body += '_Pilih bot di daftar bawah untuk mematikan / menghapus / menyalakan._';
 

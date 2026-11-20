@@ -1,13 +1,12 @@
 /**
  * ALUR SATU PESAN — handleIncomingMessage():
  *   saring (duplikat / lama / bot sendiri) → baca teks semua jenis pesan → identitas & owner → database →
- *   hook before() → cari command → cek akses (sewa, owner, grup, admin, DAFTAR, PREMIUM, limit) → plugin.execute()
+ *   hook before() → cari command → cek akses (owner, grup, admin, DAFTAR, PREMIUM, limit) → plugin.execute()
  * Semua kalimat penolakan ada di handler/texts.js.
  */
 const { jidNormalizedUser } = require('../lib/wa/waCompat');
 const config = require('../config');
 const db = require('../lib/data/database');
-const rental = require('../lib/billing/rental');
 const botSettings = require('../lib/core/botSettings');
 const messageStore = require('../lib/core/messageStore');
 const { isLid, resolveJid } = require('../lib/core/jid');
@@ -20,8 +19,6 @@ const TEXT = require('./texts');
 const { extractAllText, extractQuotedInfo, parseCommandAndPrefix } = require('./parser');
 const { resolveIdentity, participantMatches, needsRegister } = require('./access');
 const { onGroupStub } = require('./groupDetect');
-
-const sewaHintAt = new Map();   // jid grup -> waktu petunjuk terakhir (agar tidak spam)
 
 
 async function handleStatus(sock, m) {
@@ -200,15 +197,6 @@ async function handleIncomingMessage(sock, m) {
             let typingShown = false;
 
             try {
-                // Mode enforce: grup yang belum menyewa tidak dilayani (kecuali owner & command sewa)
-                if (isGroup && config.sewa.enforce && !sock.isJadibot && !isOwner && !plugin.sewaExempt && !rental.isActive(group)) {
-                    status = 'DITOLAK';
-                    if (Date.now() - (sewaHintAt.get(from) || 0) > 10 * 60 * 1000) {
-                        sewaHintAt.set(from, Date.now());
-                        await reply(TEXT.sewaRequired(prefix));
-                    }
-                    return;
-                }
                 if (plugin.rootOwner && !isRootOwner) return await deny(TEXT.rootOwnerOnly);
                 if (plugin.owner && !isOwner) return await deny(TEXT.ownerOnly);
                 if (plugin.group && !isGroup) return await deny(TEXT.groupOnly);

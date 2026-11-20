@@ -6,7 +6,6 @@
 const { proto } = require('../lib/wa/waCompat');
 const config = require('../config');
 const db = require('../lib/data/database');
-const rental = require('../lib/billing/rental');
 const { isLid, resolveJid, participantJid } = require('../lib/core/jid');
 const { getCachedGroupMetadata } = require('../lib/core/jid');
 const { logError } = require('../lib/core/logger');
@@ -16,12 +15,11 @@ const TEXT = require('./texts');
 /* ── deteksi perubahan grup ── */
 const detectSeen = new Map();
 
-/** Grup yang boleh dikirimi notifikasi deteksi (fitur aktif, tidak diban/mute, sewa valid), atau null. */
+/** Grup yang boleh dikirimi notifikasi deteksi (fitur aktif, tidak diban/mute), atau null. */
 function detectGroup(sock, gid) {
     if (!config.groupDetect?.enabled || !gid || !gid.endsWith('@g.us')) return null;
     const group = db.getGroup(gid);
     if (!group || !group.settings.detect || group.banned.active || group.settings.mute) return null;
-    if (config.sewa.enforce && !sock.isJadibot && !rental.isActive(group)) return null;
     return group;
 }
 

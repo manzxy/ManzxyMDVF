@@ -155,7 +155,6 @@
   <symbol id="i-gift" viewBox="0 0 24 24"><rect x="3" y="9" width="18" height="12" rx="2"/><path d="M3 13h18M12 9v12"/><path d="M12 9C10 9 8 8 8 6.2 8 5 9 4 10.2 4 12 4 12 6.5 12 9zM12 9c2 0 4-1 4-2.8C16 5 15 4 13.8 4 12 4 12 6.5 12 9z"/></symbol>
   <symbol id="i-wallet" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/><circle cx="16.5" cy="14.5" r="1.2"/></symbol>
   <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2z"/><path d="M9 8h6M9 12h6"/></symbol>
-  <symbol id="i-tag" viewBox="0 0 24 24"><path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"/><circle cx="7.5" cy="7.5" r="1.6"/></symbol>
   <symbol id="i-terminal" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M7 9l3 3-3 3M13 15h4"/></symbol>
   <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h5v18H6a2 2 0 0 1-2-2z"/><path d="M20 5a2 2 0 0 0-2-2h-5v18h5a2 2 0 0 0 2-2z"/></symbol>
   <symbol id="i-crown" viewBox="0 0 24 24"><path d="M3 8l4 3 5-6 5 6 4-3-2 11H5z"/></symbol>
@@ -207,10 +206,6 @@
       <button class="tab" data-page="jadibot">
         <svg class="nav-ic" aria-hidden="true"><use href="#i-bot"/></svg>
         <span class="nav-label" data-i18n>JADIBOT</span>
-      </button>
-      <button class="tab" data-page="sewa">
-        <svg class="nav-ic" aria-hidden="true"><use href="#i-tag"/></svg>
-        <span class="nav-label">SEWA GRUP</span>
       </button>
       <button class="tab" data-page="commands">
         <svg class="nav-ic" aria-hidden="true"><use href="#i-terminal"/></svg>
@@ -460,72 +455,6 @@
       <div class="card mt">
         <h3 class="card-title"><span data-i18n>JADIBOT TERBARU</span></h3>
         <div id="dash-bots" class="mini-list"><p class="empty">Belum ada jadibot.</p></div>
-      </div>
-    </section>
-
-    <!-- ─────── SEWA GRUP ─────── -->
-    <section class="page hidden" id="page-sewa">
-      <div class="page-head">
-        <h2 class="page-title">🏷️ Sewa Grup</h2>
-        <div class="page-head-actions">
-          <button class="btn btn-sm" id="btn-refresh-sewa">⟳ REFRESH</button>
-        </div>
-      </div>
-
-      <div class="card card-blue">
-        <h3 class="card-title">BOT MASUK GRUP KAMU</h3>
-        <p class="muted small">Tempel link undangan grup, pilih paket, bayar QRIS. Bot langsung masuk grup setelah pembayaran terdeteksi — tanpa perlu chat owner.</p>
-        <div class="grid grid-3 mt-sm" id="sewa-stats">
-          <div class="kpi-mini"><span class="stat-label">SEWA AKTIF</span><strong class="stat-value sm" id="sw-active">0</strong></div>
-          <div class="kpi-mini"><span class="stat-label">HARGA / HARI</span><strong class="stat-value sm" id="sw-perday">-</strong></div>
-          <div class="kpi-mini"><span class="stat-label">DISKON</span><strong class="stat-value sm" id="sw-disc">-</strong></div>
-        </div>
-      </div>
-
-      <div class="grid grid-2 mt">
-        <div class="card">
-          <h3 class="card-title">SEWA BARU</h3>
-          <label class="lbl" for="sw-link">Link undangan grup</label>
-          <input class="inp" id="sw-link" type="url" placeholder="https://chat.whatsapp.com/…" spellcheck="false" autocomplete="off">
-          <p class="field-hint">Jadikan bot admin grup setelah masuk supaya semua fitur grup berjalan.</p>
-
-          <label class="lbl" for="sw-package">Paket durasi</label>
-          <select class="inp" id="sw-package"></select>
-
-          <label class="lbl" for="sw-days">Atau durasi custom (hari) <span class="opt">(harga Rp/hari)</span></label>
-          <input class="inp" id="sw-days" type="number" min="1" max="3650" placeholder="cth: 14" inputmode="numeric">
-          <p class="field-hint" id="sw-custom-hint">Kosongkan bila pakai paket di atas.</p>
-
-          <div class="price-row"><span>Total bayar</span><strong id="sw-price">-</strong></div>
-          <button class="btn btn-primary btn-block mt-sm" id="btn-sewa-qris">BUAT QRIS SEWA</button>
-          <div id="sw-result" class="mt-sm"></div>
-        </div>
-
-        <div class="card card-yellow">
-          <h3 class="card-title">TAGIHAN AKTIF</h3>
-          <div id="sw-qr-empty" class="empty-state">
-            <div class="qr-placeholder">QR</div>
-            <p class="muted small">Isi link grup &amp; pilih paket, lalu klik BUAT QRIS.</p>
-          </div>
-          <div id="sw-qr-active" class="hidden">
-            <div class="qr-box"><img id="sw-qr-img" alt="QRIS sewa grup"></div>
-            <div class="kv">
-              <div class="kv-row"><span>Grup</span><strong id="sw-qr-group">-</strong></div>
-              <div class="kv-row"><span>Total bayar</span><strong id="sw-qr-total">-</strong></div>
-              <div class="kv-row"><span>Status</span><strong id="sw-qr-status">-</strong></div>
-              <div class="kv-row"><span>ID</span><strong id="sw-qr-trx" class="mono small">-</strong></div>
-            </div>
-            <button class="btn btn-block mt-sm" id="btn-check-sewa-qr">CEK STATUS</button>
-          </div>
-        </div>
-      </div>
-
-      <div class="card mt">
-        <div class="page-head">
-          <h3 class="card-title">GRUP YANG MENYEWA</h3>
-          <span class="muted" id="sw-count">-</span>
-        </div>
-        <div id="sw-list" class="mini-list"><p class="empty">Memuat…</p></div>
       </div>
     </section>
 
@@ -884,8 +813,6 @@
           <input class="inp" id="ad-free-slots" type="number" min="0" max="500">
           <label class="lbl">Diskon jadibot (%)</label>
           <input class="inp" id="ad-disc-jadibot" type="number" min="0" max="99">
-          <label class="lbl">Diskon sewa grup (%)</label>
-          <input class="inp" id="ad-disc-rent" type="number" min="0" max="99">
           <label class="lbl">Diskon premium (%)</label>
           <input class="inp" id="ad-disc-prem" type="number" min="0" max="99">
           <button class="btn btn-primary btn-block mt-sm" id="btn-save-promo">SIMPAN DISKON</button>
@@ -1423,7 +1350,7 @@
           <div class="divider"></div>
 
           <h3 class="card-title">🪝 WEBHOOK EVENT</h3>
-          <p class="muted">Panel kirim POST ke URL-mu saat ada event: saldo masuk, bot online/offline, sewa habis. Dokumentasi: <a href="/docs" target="_blank" rel="noopener">/docs</a></p>
+          <p class="muted">Panel kirim POST ke URL-mu saat ada event: saldo masuk, bot online/offline, masa aktif habis. Dokumentasi: <a href="/docs" target="_blank" rel="noopener">/docs</a></p>
           <label class="lbl">URL webhook</label>
           <input class="inp" id="wh-url" type="url" placeholder="https://servermu.com/hook">
           <label class="lbl">Secret (opsional, untuk verifikasi HMAC)</label>
