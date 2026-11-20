@@ -105,9 +105,9 @@ async function handleIncomingMessage(sock, m) {
         if (group?.banned.active && !isOwner) return;
         if (db.data.settings.maintenance && !isRootOwner) return;
 
-        // EDISI GRATIS: semua user diperlakukan Premium & unlimited.
-        const isPremium = true;
-        const isUnlimited = true;
+        // EDISI GRATIS: user biasa kena limit harian & plugin premium; Owner tetap unlimited.
+        const isPremium = db.isPremium(user);
+        const isUnlimited = isOwner || isPremium;
         const isRegistered = Boolean(user?.registered);
 
         logMessage({ pushname, senderNumber, isGroup, groupName: group?.name, mtype, body, botLabel });
@@ -208,9 +208,10 @@ async function handleIncomingMessage(sock, m) {
                 if (!isOwner && !isRegistered && needsRegister(plugin)) {
                     return await denyButton('🔐 BELUM TERDAFTAR', TEXT.registerRequired(prefix), [button.copy('📋 Salin contoh daftar', `${prefix}daftar ${String(pushname).replace(/[^\p{L}\p{N} ]/gu, '').trim().slice(0, 20) || 'Nama'}.17`)]);
                 }
-                // Fitur premium (plugin `premium: true`)
-                // EDISI GRATIS: plugin premium tidak diblokir.
-                // if (plugin.premium && !isPremium && !isOwner) { ... }
+                // Fitur premium (plugin `premium: true`) — EDISI GRATIS: diblokir untuk user biasa.
+                if (plugin.premium && !isPremium && !isOwner) {
+                    return await denyButton(TEXT.premiumTitle, TEXT.premiumBody(plugin.name || command, prefix), [button.quick('⭐ Beli Premium', `${prefix}buyprem`)]);
+                }
 
                 if (group?.disabledCommands.includes(command) && !isOwner) return;
                 if (group?.settings.mute && !isOwner && !isAdmin) return;

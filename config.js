@@ -38,10 +38,10 @@ module.exports = {
     /* Panel web */
     webPanelUrl: process.env.WEB_PANEL_URL || 'https://panel.manzxy.biz.id',
 
-    /* Harga & limit */
-    limit: { daily: 0 },                                                   // EDISI GRATIS: tanpa limit harian
+    /* Harga & limit — EDISI GRATIS: fitur terbatas, upgrade ke Premium untuk unlimited */
+    limit: { daily: 30, freeCategories: ['main', 'info', 'group', 'jadibot', 'premium', 'owner', 'plugin'] },
     premium: { price: { perDay: 2000, perHour: 1000 } },
-    jadibot: { max: 10, price: { perDay: 1000, packages: { '7d': 5000, '30d': 15000, '90d': 35000 } } },
+    jadibot: { max: 10, maxPerUser: 1, price: { perDay: 1000, packages: { '7d': 5000, '30d': 15000, '90d': 35000 } } },
 
     /* Tampilan */
     footerText: 'ManzxyMD',
