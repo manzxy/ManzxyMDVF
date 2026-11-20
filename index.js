@@ -147,8 +147,6 @@ const licenseReady = licenseGate().catch((err) => {
     process.exit(1);
 });
 
-const qrcode = require('qrcode-terminal');
-
 const config = require('./config');
 require('./lib/core/configDefaults').apply(config);
 const db = require('./lib/data/database');
@@ -167,9 +165,9 @@ const { numberOf } = require('./lib/core/utils');
 const { createZapoEngine } = require('./lib/wa/zapoEngine');
 
 const args = process.argv.slice(2);
-let isPairingMode = config.usePairingCode;
-if (args.includes('--qr')) isPairingMode = false;
-if (args.includes('--pairing')) isPairingMode = true;
+// Edisi free: pairing code SAJA. QR tidak didukung; flag --qr/--pairing diterima
+// untuk kompatibilitas perintah lama tetapi tetap memakai pairing.
+const isPairingMode = true;
 
 let firstConnect = true;
 let reconnectAttempts = 0;
@@ -213,9 +211,8 @@ async function startBotZapo() {
         sessionId: config.sessionName || 'main',
         dbDir: path.join(__dirname, 'session_zapo'),
         getMessage: getStoredMessage,
-        onQr: (qr) => {
-            if (isPairingMode) return;
-            qrcode.generate(qr, { small: true });
+        onQr: () => {
+            // QR sengaja tidak dirender di edisi free. Pairing code dipakai.
         },
         onPairing: (code) => {
             console.log(`\n  🔑 KODE PAIRING : ${jadibot.formatManzkenzPairingCode(code)}`);
@@ -258,9 +255,18 @@ async function startBotZapo() {
     renewal.setSock(sock);
     bindEvents(sock, { isActive: () => currentSock === sock });
 
-    if (isPairingMode && !sock.authState.creds.registered) {
-        const num = config.pairingNumber || String(process.env.PAIRING_NUMBER || '').replace(/\D/g, '');
-        if (num) setTimeout(() => engine.requestPairingCode(num).catch((e) => logError('PAIRING', e)), 1500);
+    if (!sock.authState.creds.registered) {
+        let num = String(config.pairingNumber || process.env.PAIRING_NUMBER || '').replace(/\D/g, '');
+        if (!num) {
+            console.log('\n  ' + paint('Akun belum tertaut — login memakai KODE PAIRING.', C.yellow));
+            num = String(await question(paint('  Nomor WhatsApp (contoh 62812xxxxxxx): ', C.cyan))).replace(/\D/g, '');
+        }
+        if (!num) {
+            console.log('  ' + paint('Nomor kosong. Tidak bisa meminta kode pairing.', C.red));
+            process.exit(1);
+        }
+        config.pairingNumber = num;
+        setTimeout(() => engine.requestPairingCode(num).catch((e) => logError('PAIRING', e)), 1500);
     }
 
     await engine.connect();

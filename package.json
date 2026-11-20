@@ -10,7 +10,6 @@
   "scripts": {
     "start": "node scripts/dev.js",
     "pairing": "node scripts/dev.js --pairing",
-    "qr": "node scripts/dev.js --qr",
     "check": "node --check index.js && node --check handler/index.js && node --check scripts/dev.js && node --check lib/core/projectWatcher.js",
     "test": "node --test tests/*.test.js",
     "test:rpg": "node tests/rpg-all-commands.harness.js"
@@ -31,7 +30,6 @@
     "node-cache": "^5.1.2",
     "pino": "^9.0.0",
     "qrcode": "^1.5.4",
-    "qrcode-terminal": "^0.12.0",
     "wa-store-migrate": "^0.1.2",
     "yt-search": "^2.12.1",
     "zapo-js": "^1.12.0"

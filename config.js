@@ -29,8 +29,8 @@ module.exports = {
 
     /* Login & mode */
     selfMode: false,                       // true = hanya owner, false = publik
-    usePairingCode: false,                 // false = pakai QR
-    pairingNumber: process.env.PAIRING_NUMBER || '6281234567890',
+    usePairingCode: true,                  // edisi free: pairing code saja (QR dinonaktifkan)
+    pairingNumber: process.env.PAIRING_NUMBER || '',
 
     /* Pembayaran QRIS (KiPay). WAJIB lewat env KIPAY_API_KEY — jangan menaruh API key di source code. */
     kipay: { api_key: process.env.KIPAY_API_KEY || '', pollIntervalSec: 5 },

@@ -6,7 +6,8 @@ const { spawn } = require('node:child_process');
 const { watchProject } = require('../lib/core/projectWatcher');
 
 const root = path.resolve(__dirname, '..');
-const botArgs = process.argv.slice(2);
+// Edisi free pairing-only: flag --qr lama diterjemahkan ke --pairing.
+const botArgs = process.argv.slice(2).map((a) => (a === '--qr' ? '--pairing' : a));
 // Baca lokasi data dari konfigurasi tanpa menjalankan bot di proses supervisor.
 function dataPaths() {
     delete require.cache[require.resolve('../config')];

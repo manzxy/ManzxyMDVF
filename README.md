@@ -135,7 +135,7 @@ kunci baru (mis. `kipay`, `renewal`) tanpa mengganti config lama.
 | --- | --- |
 | `botName`, `ownerName`, `ownerNumber` | Identitas tampilan dan daftar root owner. **Periksa `ownerNumber`.** |
 | `selfMode` | `true` membatasi respons ke owner; `false` membuka akses sesuai plugin. |
-| `usePairingCode`, `pairingNumber` | Metode login (kode pairing vs QR) dan nomor pairing. |
+| `usePairingCode`, `pairingNumber` | Edisi free **selalu memakai kode pairing** (QR tidak didukung). `pairingNumber` = nomor WA; kosongkan untuk ditanyakan di console. |
 | `prefix`, `prefixes`, `multiPrefix` | Awalan perintah. `noPrefix` (lanjutan) untuk perintah tanpa prefix. |
 | `sessionName` | Direktori sesi utama (bawaan `session/`). |
 | `limit.daily` | Kuota limit harian pengguna biasa. |
@@ -164,25 +164,29 @@ Perubahan konfigurasi dibaca saat proses start, sehingga akan diterapkan lewat r
 ## Menjalankan Bot
 
 ```bash
-npm run pairing   # tautkan dengan kode pairing
-npm run qr        # alternatif: tampilkan QR di terminal
-npm start         # jalankan kembali memakai sesi tersimpan
+npm start         # jalankan bot (pairing code bila belum ada sesi)
+npm run pairing   # alias: sama seperti npm start di edisi free
 ```
+
+> [!NOTE]
+> **Edisi free hanya memakai kode pairing — QR tidak tersedia.** Perintah `npm run qr`
+> sudah dihapus. Flag `--qr` lama otomatis diterjemahkan ke pairing untuk kompatibilitas.
 
 | Mode | Perilaku |
 | --- | --- |
-| `npm run pairing` | Memaksa login via kode pairing untuk satu kali jalan (mengimbangi `usePairingCode`). |
-| `npm run qr` | Memaksa login via QR terminal untuk satu kali jalan. Terminal harus menampilkan output proses. |
-| `npm start` | Memakai sesi tersimpan; jika belum ada, mengikuti `usePairingCode`. |
+| `npm start` | Memakai sesi tersimpan; jika belum ada, meminta kode pairing. |
+| `npm run pairing` | Sama dengan `npm start` (pairing memang satu-satunya metode). |
 
-- Nomor pairing diambil dari `PAIRING_NUMBER` atau ditanyakan melalui terminal.
-- Masukkan kode dari menu **Perangkat Tertaut** di WhatsApp.
-- Sesi utama disimpan di `sessionName` (bawaan `session/`), sesi jadibot di `sessions_jadibot/`.
+- Nomor pairing diambil dari `PAIRING_NUMBER` (atau `config.pairingNumber`); bila kosong,
+  bot menanyakan nomor WA di console saat start.
+- Kode pairing tampil di console, lalu masukkan di WhatsApp > **Perangkat Tertaut**
+  > **Tautkan dengan nomor telepon**.
+- Sesi utama disimpan di `session_zapo/` (SQLite), sesi jadibot di `sessions_jadibot/`.
 - **Jangan jalankan dua proses dengan sesi WhatsApp yang sama.**
 
 ### Alur perubahan kode (development)
 
-`npm start`, `npm run pairing`, dan `npm run qr` menjalankan `scripts/dev.js` sebagai supervisor:
+`npm start` dan `npm run pairing` menjalankan `scripts/dev.js` sebagai supervisor:
 
 - Perubahan pada `config.js`, `handler/`, `lib/`, `plugins/`, dan berkas pendukung memicu restart otomatis.
 - Perubahan digabungkan ± 450 ms sebelum restart (debounce).
