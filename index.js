@@ -2,30 +2,92 @@ const readline = require('readline');
 const fs = require('fs');
 const path = require('path');
 
-/* ── License gate HARD. Jalan SEBELUM modul lain. ──
- * Bot TIDAK bisa berjalan tanpa key valid dari owner.
- * Kecuali argumen --fingerprint: tampilkan fingerprint lalu keluar (untuk minta key). */
+/* ── License gate. Jalan SEBELUM modul lain. ──
+ * Alur: owner buat key → kasih ke user → user tempel di console saat start.
+ *   --fingerprint        → tampilkan fingerprint, keluar (buat minta key)
+ *   --key <key>          → pakai key dari argumen (PM2/systemd), simpan, lanjut
+ *   key di env/.license-key → lanjut
+ *   belum ada key        → TANYA di console, verifikasi, simpan, lanjut
+ */
 const lic = require('./lib/core/license');
 
-if (process.argv.includes('--fingerprint')) {
-    console.log('\n  Fingerprint mesin ini:');
-    console.log('  ' + lic.displayFingerprint());
-    console.log('  Kirim ke owner untuk dibuatkan license key.\n');
-    process.exit(0);
-}
+let _licenseRl = null;
+const question = (text) => new Promise((resolve) => {
+    if (!_licenseRl) _licenseRl = readline.createInterface({ input: process.stdin, output: process.stdout });
+    _licenseRl.question(text, (ans) => resolve(ans));
+});
+const closeQuestion = () => { try { _licenseRl?.close(); } catch {} _licenseRl = null; };
 
-try {
-    const r = lic.enforce();
-    if (!r.ok) throw new Error(`[${r.reason}] ${r.message}`);
+function printLicense(r) {
     console.log(`\n  🔐 Lisensi aktif — ${r.payload?.c || 'customer'} (${r.payload?.t || 'free'})`);
     console.log(`     ID: ${r.payload?.j || '-'} | Berlaku s/d: ${r.payload?.e ? new Date(r.payload.e).toISOString() : 'selamanya'}\n`);
-} catch (err) {
-    console.error('\n  ⛔ LISENSI TIDAK VALID — bot free tidak dijalankan.');
-    console.error('  ' + String(err.message || err).split('\n').join('\n  '));
-    console.error('  Fingerprint mesin ini: ' + lic.displayFingerprint());
-    console.error('  Kirim fingerprint ke owner, pasang key lewat .setkey <key> atau MZ_LICENSE_KEY, lalu restart.\n');
+}
+
+async function licenseGate() {
+    if (process.argv.includes('--fingerprint')) {
+        console.log('\n  Fingerprint mesin ini:');
+        console.log('  ' + lic.displayFingerprint());
+        console.log('  Kirim ke owner untuk dibuatkan license key.\n');
+        process.exit(0);
+    }
+
+    // 1. Argumen --key <key> (dipakai PM2 / systemd / docker)
+    const keyArgIdx = process.argv.indexOf('--key');
+    if (keyArgIdx !== -1 && process.argv[keyArgIdx + 1]) {
+        const r = lic.verifyKey(process.argv[keyArgIdx + 1].trim());
+        if (!r.ok) {
+            console.error(`\n  ⛔ LICENSE KEY DITOLAK [${r.reason}]: ${r.message}`);
+            console.error('  Cek key dari owner, atau lihat fingerprint: node index.js --fingerprint\n');
+            process.exit(1);
+        }
+        lic.saveKey(process.argv[keyArgIdx + 1].trim());
+        printLicense(r);
+        return;
+    }
+
+    // 2. Key dari env / file yang tersimpan
+    let r = lic.check();
+    if (r.ok) { printLicense(r); return; }
+
+    // 3. Kalau ada key lama tapi invalid/expired, beri tahu dulu
+    const stored = process.env.MZ_LICENSE_KEY || lic.readKeyFile();
+    if (stored) {
+        console.error(`\n  ⚠️  Key tersimpan tidak aktif [${r.reason}]: ${r.message}`);
+    }
+
+    // 4. Minta key lewat console
+    console.log('\n  ─────────────────────────────────────────────────────────');
+    console.log('  🔑 MANZXYMD FREE — BUTUH LICENSE KEY');
+    console.log('  Belum ada key aktif. Masukkan license key dari owner.');
+    console.log('  Fingerprint mesin ini: ' + lic.displayFingerprint());
+    console.log('  (Kirim fingerprint ke owner bila belum punya key)');
+    console.log('  ─────────────────────────────────────────────────────────');
+
+    for (let attempt = 1; attempt <= 3; attempt++) {
+        const input = String(await question(`  License key (percobaan ${attempt}/3): `)).trim();
+        if (!input) { console.log('  Key kosong.\n'); continue; }
+        r = lic.verifyKey(input);
+        if (r.ok) {
+            lic.saveKey(input);
+            closeQuestion();
+            console.log('  ✅ Key valid. Tersimpan di .license-key\n');
+            printLicense(r);
+            return;
+        }
+        console.error(`  ❌ Ditolak [${r.reason}]: ${r.message}\n`);
+    }
+
+    closeQuestion();
+    console.error('\n  ⛔ 3x gagal — bot tidak dijalankan.');
+    console.error('  Dapatkan key dari owner, lalu jalankan: node index.js --key <key>\n');
     process.exit(1);
 }
+
+// Gate async (bisa menunggu input console). Boot dijalankan setelah lolos.
+const licenseReady = licenseGate().catch((err) => {
+    console.error('\n  ⛔ GAGAL MEMPROSES LISENSI:', err.message || err);
+    process.exit(1);
+});
 
 const qrcode = require('qrcode-terminal');
 
@@ -72,11 +134,6 @@ async function shutdown(signal) {
 }
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
-
-const question = (text) => new Promise((resolve) => {
-    const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
-    rl.question(text, (ans) => { rl.close(); resolve(ans); });
-});
 
 /**
  * Satu-satunya jalur koneksi: zapo-js. Menghasilkan `sock` ala Baileys lewat
@@ -151,15 +208,17 @@ async function startBotZapo() {
     await engine.connect();
 }
 
-/* ───────────── Boot ───────────── */
-db.load();
-loadPlugins();
-if (config.hotReload && !process.env.MANZXY_SUPERVISED) watchPlugins(); // supervisor memantau seluruh proyek; jangan pasang pemantau plugin kedua
-keepAlive.start();
-// Panel web memakai port keep-alive yang sama (/panel dan /api/*)
-if (keepAlive.server) webPanel.attachTo(keepAlive.server);
-else webPanel.start(config.port);
-payment.start({ handleIncomingMessage });
-renewal.start({ handleIncomingMessage });
-cleaner.start();
-startBotZapo().catch((err) => { logError('START', err); process.exit(1); });
+/* ───────────── Boot (setelah lisensi lolos) ───────────── */
+licenseReady.then(() => {
+    db.load();
+    loadPlugins();
+    if (config.hotReload && !process.env.MANZXY_SUPERVISED) watchPlugins(); // supervisor memantau seluruh proyek; jangan pasang pemantau plugin kedua
+    keepAlive.start();
+    // Panel web memakai port keep-alive yang sama (/panel dan /api/*)
+    if (keepAlive.server) webPanel.attachTo(keepAlive.server);
+    else webPanel.start(config.port);
+    payment.start({ handleIncomingMessage });
+    renewal.start({ handleIncomingMessage });
+    cleaner.start();
+    startBotZapo().catch((err) => { logError('START', err); process.exit(1); });
+});

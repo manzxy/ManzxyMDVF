@@ -1004,28 +1004,43 @@ ManzxyBase (penerbit), terikat pada **fingerprint mesin** dan tanggal kedaluwars
 
 **Format key:** `MZF-<payload>.<signature>` — payload berisi customer, fingerprint, expiry, tier, dan id.
 
-### Cara mendapatkan key
+### Alur lisensi (owner → user)
 
-1. Dapatkan fingerprint mesin Anda:
+```
+owner buat key (.createkey)  →  key dikirim ke user  →  user tempel di console saat start bot
+```
+
+**Untuk user:**
+
+1. Dapatkan fingerprint mesin (kirim ke owner bila belum punya key):
    ```bash
-   node index.js --fingerprint       # atau: node scripts/license.js fingerprint
+   node index.js --fingerprint
    ```
-2. Kirim fingerprint tersebut ke owner (Manzxy).
-3. Owner menerbitkan key lewat `.createkey` di bot ManzxyBase.
-4. Pasang key yang diterima (pilih salah satu):
+2. Owner menerbitkan key lewat `.createkey` di bot ManzxyBase dan mengirimkannya ke Anda.
+3. Jalankan bot, lalu **tempel key di console** saat diminta:
    ```bash
-   # Lewat WhatsApp (Root Owner di bot free):
-   .setkey MZF-xxxx.yyyy
-
-   # Lewat CLI:
-   node scripts/license.js install MZF-xxxx.yyyy
-
-   # Lewat environment (.env):
-   MZ_LICENSE_KEY=MZF-xxxx.yyyy
+   node index.js
+   # 🔑 MANZXYMD FREE — BUTUH LICENSE KEY
+   # License key (percobaan 1/3): <tempel MZF-... di sini, Enter>
+   # ✅ Key valid. Tersimpan di .license-key
    ```
-5. Restart bot.
+   Key akan disimpan otomatis, jadi start berikutnya langsung jalan tanpa input ulang.
 
-Cek status: `.license` di bot, atau `node scripts/license.js status`.
+**Cara alternatif (tanpa prompt interaktif):**
+
+```bash
+# Argumen --key (cocok untuk PM2 / systemd / docker):
+node index.js --key MZF-xxxx.yyyy
+
+# Atau environment (.env):
+MZ_LICENSE_KEY=MZF-xxxx.yyyy
+
+# Atau CLI:
+node scripts/license.js install MZF-xxxx.yyyy
+```
+
+Salah key: prompt memberi 3 kali percobaan, lalu bot berhenti. Cek status: `.license`
+di bot, atau `node scripts/license.js status`.
 
 ### Command lisensi di bot free (khusus Root Owner)
 
