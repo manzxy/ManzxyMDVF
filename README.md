@@ -15,7 +15,7 @@ pembayaran QRIS, permainan, serta panel web dengan telemetri server.
 ![Version](https://img.shields.io/badge/version-8.11.1-blue)
 ![Plugins](https://img.shields.io/badge/plugins-102%20file%20%C2%B7%20338%20command-FF5DA2)
 ![Panel](https://img.shields.io/badge/panel-neobrutalism-3D8BFF)
-![License](https://img.shields.io/badge/license-Unlicensed-lightgrey)
+![License](https://img.shields.io/badge/license-Free%20%2B%20license--ready-orange)
 
 </div>
 
@@ -44,7 +44,10 @@ pembayaran QRIS, permainan, serta panel web dengan telemetri server.
 14. [Keamanan dan Penanganan Data](#keamanan-dan-penanganan-data)
 15. [Troubleshooting](#troubleshooting)
 16. [Kontribusi](#kontribusi)
-17. [Lisensi dan Atribusi](#lisensi-dan-atribusi)
+17. [Sistem Lisensi](#sistem-lisensi)
+18. [Profil Owner](#profil-owner)
+19. [Ucapan Terima Kasih](#ucapan-terima-kasih)
+20. [Lisensi dan Atribusi](#lisensi-dan-atribusi)
 
 ---
 
@@ -987,9 +990,91 @@ Catatan operasional:
 
 ---
 
+## Sistem Lisensi
+
+Edisi gratis **dapat dipakai tanpa lisensi** (mode *soft*: bot tetap jalan, hanya muncul
+pemberitahuan saat boot). Bila pemilik ingin mengunci pemakaian, tersedia mekanisme
+license key berbasis **HMAC-SHA256** yang terikat pada **fingerprint mesin** dan tanggal
+kedaluwarsa.
+
+| Mode | Cara aktifkan | Perilaku tanpa / dengan key invalid |
+| --- | --- | --- |
+| **Soft** (default) | tanpa variabel khusus | Bot jalan + warning di log. |
+| **Hard** | `MZ_LICENSE_REQUIRED=1` | Bot **berhenti** bila key tidak ada/invalid/expired. |
+
+**Format key:** `MZF-<payload>.<signature>` — payload berisi customer, fingerprint, expiry, dan tier.
+
+### Memasang key (sebagai user)
+
+Tiga cara, pilih salah satu:
+
+```bash
+# 1. Lewat WhatsApp (Root Owner):
+#    .setkey MZF-xxxx.yyyy
+
+# 2. Lewat CLI:
+node scripts/license.js install MZF-xxxx.yyyy
+
+# 3. Lewat environment (.env):
+MZ_LICENSE_KEY=MZF-xxxx.yyyy
+```
+
+Cek status: `.license` di bot, atau `node scripts/license.js status`.
+Lihat fingerprint mesin: `.fingerprint` di bot, atau `node scripts/license.js fingerprint`.
+
+### Menerbitkan key (sebagai penerbit lisensi)
+
+```bash
+node scripts/license.js secret                                  # buat .license-secret (sekali)
+node scripts/license.js fingerprint                             # fingerprint mesin target
+node scripts/license.js issue "Nama Customer" 30 <fingerprint>  # key 30 hari
+node scripts/license.js issue "Nama Customer" 0 <fingerprint>   # key lifetime
+node scripts/license.js verify MZF-xxxx.yyyy                    # cek kevalidan key
+```
+
+> [!IMPORTANT]
+> `.license-secret` adalah rahasia penerbit. Jangan pernah di-commit atau dibagikan.
+> `.license-key` dan `.license-secret` sudah masuk `.gitignore`. Key yang terikat fingerprint
+> hanya bisa dipakai pada mesin yang sesuai.
+
+Command terkait: `.setkey`, `.delkey`, `.license`, `.fingerprint` (khusus Root Owner).
+
+---
+
+## Profil Owner
+
+| | |
+| --- | --- |
+| **Nama** | Manzxy |
+| **GitHub** | [@manzxy](https://github.com/manzxy) |
+| **Email** | humanznodejs@gmail.com |
+| **Proyek** | ManzxyMD — WhatsApp bot modular berbasis zapo-js |
+| **Edisi** | Gratis (repo ini) dan Premium (berlisensi, dijual terpisah) |
+
+Pertanyaan, laporan bug, atau permintaan fitur: buka *Issues* di repository ini atau
+hubungi lewat email di atas.
+
+---
+
+## Ucapan Terima Kasih (TQTO)
+
+Terima kasih kepada semua pihak yang membuat proyek ini mungkin:
+
+- **[zapo-js](https://www.npmjs.com/package/zapo-js)** — engine WhatsApp multi-device yang jadi fondasi koneksi bot (v1.12.0).
+- **[@napi-rs/canvas](https://github.com/Brooooooklyn/canvas)** — render kartu profil RPG dan gambar lainnya.
+- **[sharp](https://sharp.pixelplumbing.com/)** — pemrosesan gambar & stiker.
+- **Node.js** — runtime yang menopang seluruh layanan.
+- **Para kontributor & pengguna** — masukan, bug report, dan dukungan yang terus membuat proyek ini berkembang.
+- **Keluarga & teman-teman** — yang memberi ruang dan waktu untuk terus membangun.
+
+---
+
 ## Lisensi dan Atribusi
 
-Proyek ini tidak menyertakan berkas lisensi eksplisit; hak penggunaan mengikuti kebijakan pemilik repositori.
+Kode edisi gratis ini disediakan apa adanya untuk dipakai dan dimodifikasi pada akun/grup
+milik sendiri. Hak cipta tetap pada pemilik repositori. Edisi **Premium** adalah produk
+berlisensi terpisah dan tidak termasuk dalam repo ini.
+
 Dependensi pihak ketiga memiliki lisensinya masing-masing.
 
 - [zapo-js](https://www.npmjs.com/package/zapo-js) — pustaka WhatsApp Web API (engine utama, v1.12.0).

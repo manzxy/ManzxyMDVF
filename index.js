@@ -1,6 +1,28 @@
 const readline = require('readline');
 const fs = require('fs');
 const path = require('path');
+
+/* ── License check (soft by default). Jalan SEBELUM modul lain. ──
+ * Tanpa key: bot tetap jalan + warning. Set MZ_LICENSE_REQUIRED=1 untuk memaksa. */
+try {
+    const lic = require('./lib/core/license');
+    const r = lic.enforce();
+    if (r.ok) {
+        console.log(`\n  🔐 Lisensi aktif — ${r.payload?.c || 'customer'} (${r.payload?.t || 'free'})`);
+        console.log(`     Berlaku s/d: ${r.payload?.e ? new Date(r.payload.e).toISOString() : 'selamanya'}\n`);
+    } else if (r.required) {
+        throw new Error(`[${r.reason}] ${r.message} — MZ_LICENSE_REQUIRED=1`);
+    } else {
+        console.log(`\n  ⚠️  Lisensi tidak aktif [${r.reason}]: ${r.message}`);
+        console.log('     Bot tetap berjalan (mode soft). Pasang key lewat .setkey <key> atau MZ_LICENSE_KEY.\n');
+    }
+} catch (err) {
+    console.error('\n  ⛔ LISENSI WAJIB TIDAK VALID — bot tidak dijalankan.');
+    console.error('  ' + String(err.message || err).split('\n').join('\n  '));
+    console.error('  Hubungi penyedia lisensi.\n');
+    process.exit(1);
+}
+
 const qrcode = require('qrcode-terminal');
 
 const config = require('./config');

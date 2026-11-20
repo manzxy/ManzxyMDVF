@@ -17,6 +17,8 @@ database/*.db-wal
 .env
 .env.*
 !.env.example
+.license-key
+.license-secret
 
 # ── Workspace internal / artefak lokal ──
 .perch/
