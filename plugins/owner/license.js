@@ -30,14 +30,23 @@ module.exports = {
                 r.message
             ];
             if (r.payload) {
-                lines.push('', 'Customer : ' + r.payload.c, 'Tier     : ' + r.payload.t, 'Berlaku  : ' + fmt(r.payload.e));
+                lines.push('', 'Customer : ' + r.payload.c, 'Tier     : ' + r.payload.t,
+                    'Jenis    : ' + (r.payload.k === 'individual' ? 'Individual (1 bot)' : 'Shared (rame-rame)'),
+                    'Berlaku  : ' + fmt(r.payload.e));
             }
+            const cd = lic.cooldownRemaining();
+            if (cd > 0) lines.push('', '⏳ Jeda aktif: ' + Math.ceil(cd / 1000) + ' detik lagi.');
             return await reply(lines.join('\n'));
         }
 
         if (command === 'delkey') {
+            const prev = lic.check();
             lic.clearKey();
-            return await reply('✅ License key dihapus. Bot akan berhenti saat restart sampai key dipasang lagi.');
+            let released = false;
+            if (prev.payload?.k === 'individual' && prev.payload?.j) released = lic.releaseLock(prev.payload.j);
+            lic.clearCooldown();
+            return await reply('✅ License key dihapus' + (released ? ' (lock individual dilepas)' : '') +
+                '. Bot akan berhenti saat restart sampai key dipasang lagi.');
         }
 
         // setkey
@@ -58,6 +67,7 @@ module.exports = {
             '✅ *Lisensi berhasil dipasang.*\n\n' +
             'Customer : ' + r.payload.c + '\n' +
             'Tier     : ' + r.payload.t + '\n' +
+            'Jenis    : ' + (r.payload.k === 'individual' ? 'Individual (1 bot)' : 'Shared (rame-rame)') + '\n' +
             'Berlaku  : ' + fmt(r.payload.e) + '\n\n' +
             'Key tersimpan di `.license-key`. Berlaku setelah bot di-restart.'
         );

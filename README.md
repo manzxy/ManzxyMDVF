@@ -994,7 +994,8 @@ Catatan operasional:
 
 Edisi gratis **wajib memakai license key dari owner** untuk bisa dijalankan. Tanpa key
 valid, bot langsung berhenti saat start. Key ditandatangani dengan **Ed25519** oleh bot
-ManzxyBase (penerbit) dan punya **durasi yang bisa diatur owner**.
+ManzxyBase (penerbit) dan punya **durasi yang bisa diatur owner**. Key bisa berupa
+**shared** (dipakai banyak bot) atau **individual** (terkunci di 1 mesin).
 
 > [!IMPORTANT]
 > Script ini hanya berisi **public key** penerbit. **Private key tidak ikut didistribusikan**,
@@ -1003,7 +1004,7 @@ ManzxyBase (penerbit) dan punya **durasi yang bisa diatur owner**.
 > menolak key yang dicabut pada mesin yang sudah terpasang, perbarui
 > `.license-revoked.json` di mesin tersebut (atau minta key baru).
 
-**Format key:** `MZF-<payload>.<signature>` — payload berisi customer, expiry, tier, dan id.
+**Format key:** `MZF-<payload>.<signature>` — payload berisi customer, expiry, tier, jenis key (`k`), dan id.
 
 ### Alur lisensi (owner → user)
 
@@ -1040,8 +1041,21 @@ MZ_LICENSE_KEY=MZF-xxxx.yyyy
 node scripts/license.js install MZF-xxxx.yyyy
 ```
 
-Salah key: prompt memberi 3 kali percobaan, lalu bot berhenti. Cek status: `.license`
-di bot, atau `node scripts/license.js status`.
+Salah key: prompt memberi 3 kali percobaan. Setelah 3x salah, bot **mengunci selama
+5 menit** (cooldown) — start berikutnya ditolak dengan hitung mundur sampai masa jeda
+habis. Cek status: `.license` di bot, atau `node scripts/license.js status`.
+
+### Jenis key (diatur owner)
+
+| Jenis | Kode | Perilaku |
+| --- | --- | --- |
+| Shared | `shared`, `rame-rame`, `rame2` | Bisa dipakai banyak bot/user |
+| Individual | `individual`, `individu`, `1` | Terkunci otomatis di mesin pertama yang memakainya |
+
+Key individual tidak perlu mengirim fingerprint ke owner: lock disimpan lokal di
+`.license-lock.json` saat key pertama kali dipakai. Mesin lain yang memakai key yang sama
+akan ditolak (`DEVICE_LOCKED`). Untuk memindahkan key individual, hapus lock lewat
+`.delkey` di bot atau hapus `.license-lock.json`.
 
 ### Durasi key (diatur owner)
 
@@ -1068,11 +1082,12 @@ Contoh: `.createkey "Toko A" 30` · `.createkey "Toko B" 12h` · `.createkey "To
 | --- | --- |
 | `.setkey <key>` | Pasang license key dari owner |
 | `.delkey` | Hapus key yang tersimpan |
-| `.license` | Lihat status lisensi |
+| `.license` | Lihat status lisensi, jenis key, & sisa cooldown |
 
 > [!NOTE]
-> File `.license-key` dan `.license-revoked.json` sudah masuk `.gitignore`.
-> Jangan pernah membagikan key Anda ke pihak lain.
+> File `.license-key`, `.license-revoked.json`, `.license-lock.json`, dan
+> `.license-fail.json` sudah masuk `.gitignore`. Jangan pernah membagikan key
+> individual Anda ke pihak lain — shared boleh, individual tidak.
 
 ---
 

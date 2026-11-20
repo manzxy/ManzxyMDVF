@@ -19,6 +19,8 @@ database/*.db-wal
 !.env.example
 .license-key
 .license-revoked.json
+.license-lock.json
+.license-fail.json
 
 # ── Workspace internal / artefak lokal ──
 .perch/

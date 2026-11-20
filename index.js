@@ -51,6 +51,7 @@ function printLicense(r, source) {
     console.log(lineBot);
     statusLine('Customer', r.payload?.c || '-', C.white);
     statusLine('Tier', String(r.payload?.t || 'free').toUpperCase(), C.cyan);
+    statusLine('Jenis', r.payload?.k === 'individual' ? 'Individual (1 bot)' : 'Shared (rame-rame)', C.cyan);
     statusLine('ID', r.payload?.j || '-', C.gray);
     statusLine('Berlaku', expiryText(r.payload?.e), C.green);
     if (source) statusLine('Sumber', source, C.gray);
@@ -64,7 +65,25 @@ const question = (text) => new Promise((resolve) => {
 });
 const closeQuestion = () => { try { _licenseRl?.close(); } catch {} _licenseRl = null; };
 
+function fmtDuration(ms) {
+    const s = Math.max(0, Math.ceil(ms / 1000));
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return m + 'm ' + String(sec).padStart(2, '0') + 's';
+}
+
 async function licenseGate() {
+    // 0. Cooldown setelah 3x key salah — tolak start sampai masa jeda habis.
+    const cd = lic.cooldownRemaining();
+    if (cd > 0) {
+        console.log('\n' + lineTop);
+        console.log(center(paint('⏳ JEDA LISENSI AKTIF', C.bold + C.yellow)));
+        console.log(row(paint('3x key salah sebelumnya. Silakan coba lagi nanti.', C.gray)));
+        console.log(row(paint('Sisa jeda: ' + fmtDuration(cd), C.yellow)));
+        console.log(lineBot + '\n');
+        process.exit(1);
+    }
+
     // 1. Argumen --key <key> (dipakai PM2 / systemd / docker)
     const keyArgIdx = process.argv.indexOf('--key');
     if (keyArgIdx !== -1 && process.argv[keyArgIdx + 1]) {
@@ -112,9 +131,11 @@ async function licenseGate() {
     }
 
     closeQuestion();
+    const until = lic.startCooldown();
     console.log(lineTop);
     console.log(center(paint('LISENSI GAGAL', C.bold + C.red)));
     console.log(row(paint('3 percobaan habis. Bot tidak dijalankan.', C.gray)));
+    console.log(row(paint('Jeda 5 menit dimulai. Coba lagi setelah ' + fmtDuration(until - Date.now()) + '.', C.yellow)));
     console.log(lineBot);
     console.log('  ' + paint('Cara lain', C.gray) + ': node index.js --key <key>\n');
     process.exit(1);
