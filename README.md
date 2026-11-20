@@ -998,8 +998,9 @@ ManzxyBase (penerbit), terikat pada **fingerprint mesin** dan tanggal kedaluwars
 
 > [!IMPORTANT]
 > Script ini hanya berisi **public key** penerbit. **Private key tidak ikut didistribusikan**,
-> sehingga key tidak bisa dibuat atau dipalsukan sendiri. Key yang dicabut owner juga
-> langsung ditolak.
+> sehingga key tidak bisa dibuat atau dipalsukan sendiri. Pencabutan key dicatat di
+> server penerbit; untuk menolak key yang dicabut pada mesin yang sudah terpasang,
+> perbarui daftar `.license-revoked.json` di mesin tersebut (atau minta key baru).
 
 **Format key:** `MZF-<payload>.<signature>` — payload berisi customer, fingerprint, expiry, tier, dan id.
 
