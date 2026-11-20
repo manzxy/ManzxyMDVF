@@ -227,12 +227,17 @@ Beberapa perintah mensyaratkan owner, premium, admin grup, atau fitur pembayaran
 | **Alat & Unduhan** | `.calc`, `.qr`, `.s`, `.toimg`, `.ytsearch`, `.play`, `.tiktok`, `.bing` | Pemrosesan lokal dan layanan jaringan. `.s` menerima gambar atau GIF/WebP (sebagai dokumen), bukan MP4. |
 | **Permainan** | `.daily`, `.saldo`, `.slot`, `.top` | Koin, klaim harian, peringkat. |
 | **RPG** | `.rpg`, `.story`, `.hunt`, `.dailyrpg`, `.bounty`, `.event`, `.profile` | 20 chapter cerita, 8 kelas, 6 region, 31 monster, 12 season, quest harian, kartu profil gambar. |
+| **Anime** | `.anime`, `.animeep`, `.animejadwal` | Pencarian, episode, dan jadwal anime. |
 | **Pengelolaan** | `.setting`, `.self`, `.public`, `.reload`, `.listplug`, `.svplug` | Pengaturan bot dan manajemen plugin. Izin berbeda per perintah. |
 
 ### Kategori plugin
 
-`ai` · `downloader` · `game` · `group` · `info` · `interactive` · `jadibot` ·
+`ai` · `anime` · `downloader` · `game` · `group` · `info` · `interactive` · `jadibot` ·
 `main` · `owner` · `plugin` · `premium` · `rpg` · `tools`
+
+> **Edisi gratis:** user biasa mendapat limit 30/hari; kategori berat (`rpg`, `anime`,
+> `downloader`, `ai`, `game`) memakai limit, plugin berflag premium diblokir, dan jadibot
+> dibatasi 1 per user. Owner tetap unlimited. Edisi Premium menghapus pembatasan ini.
 
 ### Sistem RPG
 
