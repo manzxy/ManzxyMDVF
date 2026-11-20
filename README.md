@@ -28,26 +28,50 @@ pembayaran QRIS, permainan, serta panel web dengan telemetri server.
 
 ## Daftar Isi
 
-1. [Ringkasan](#ringkasan)
-2. [Persyaratan](#persyaratan)
-3. [Instalasi](#instalasi)
-4. [Konfigurasi](#konfigurasi)
-5. [Menjalankan Bot](#menjalankan-bot)
-6. [Alur Pesan](#alur-pesan)
-7. [Fitur dan Perintah](#fitur-dan-perintah)
-8. [Susunan Proyek](#susunan-proyek)
-9. [Panel Web (Jadibot)](#panel-web-jadibot)
-10. [Telemetri Server](#telemetri-server)
-11. [Mengembangkan Plugin](#mengembangkan-plugin)
-12. [Pengujian](#pengujian)
-13. [Deployment di Server](#deployment-di-server)
-14. [Keamanan dan Penanganan Data](#keamanan-dan-penanganan-data)
-15. [Troubleshooting](#troubleshooting)
-16. [Kontribusi](#kontribusi)
-17. [Sistem Lisensi](#sistem-lisensi)
-18. [Profil Owner](#profil-owner)
-19. [Ucapan Terima Kasih](#ucapan-terima-kasih)
-20. [Lisensi dan Atribusi](#lisensi-dan-atribusi)
+1. [Perkenalan](#perkenalan)
+2. [Ringkasan](#ringkasan)
+3. [Persyaratan](#persyaratan)
+4. [Instalasi](#instalasi)
+5. [Konfigurasi](#konfigurasi)
+6. [Menjalankan Bot](#menjalankan-bot)
+7. [Alur Pesan](#alur-pesan)
+8. [Fitur dan Perintah](#fitur-dan-perintah)
+9. [Susunan Proyek](#susunan-proyek)
+10. [Panel Web (Jadibot)](#panel-web-jadibot)
+11. [Telemetri Server](#telemetri-server)
+12. [Mengembangkan Plugin](#mengembangkan-plugin)
+13. [Pengujian](#pengujian)
+14. [Deployment di Server](#deployment-di-server)
+15. [Keamanan dan Penanganan Data](#keamanan-dan-penanganan-data)
+16. [Troubleshooting](#troubleshooting)
+17. [FAQ](#faq)
+18. [Kontribusi](#kontribusi)
+19. [Sistem Lisensi](#sistem-lisensi)
+20. [Profil Owner](#profil-owner)
+21. [Ucapan Terima Kasih](#ucapan-terima-kasih)
+22. [Watermark (WM)](#watermark-wm)
+23. [Lisensi dan Atribusi](#lisensi-dan-atribusi)
+
+---
+
+## Perkenalan
+
+Halo, saya **Manzxy** — pembuat dan pemilik proyek **ManzxyMD**. Bot WhatsApp ini saya
+rakit dari nol dengan arsitektur plugin yang modular, supaya mudah dikembangkan dan dipakai
+siapa saja. Repository yang kamu baca ini adalah **edisi gratis yang dibagikan untuk bersama**:
+boleh dipakai, dipelajari, dan dimodifikasi untuk akun serta grup milik sendiri.
+
+Singkatnya, ManzxyMD adalah:
+
+- Bot WhatsApp multi-fungsi berbasis **Node.js** dan **zapo-js** (multi-device).
+- Kumpulan **100+ command** dalam beragam kategori: RPG, game, anime, downloader, AI, tools,
+  grup, jadibot, dan lain-lain.
+- Dilengkapi **panel web** untuk monitoring, jadibot, topup, dan statistik secara real-time.
+- Sistem **lisensi berbasis tanda tangan Ed25519** yang aman dan tidak bisa dipalsukan.
+
+Filosofi proyek ini sederhana: **fitur yang sama untuk semua**, yang membedakan hanyalah
+update berkelanjutan dan fitur langka bagi yang membutuhkan. Selamat mencoba dan selamat
+berkarya. Terima kasih sudah mampir. 🙏
 
 ---
 
@@ -986,6 +1010,50 @@ Catatan operasional:
 
 ---
 
+## FAQ
+
+Pertanyaan yang paling sering ditanyakan sebelum memakai ManzxyMD.
+
+**Q: Apakah script ini benar-benar gratis?**
+A: Ya. Kode edisi gratis di repository ini dibagikan untuk dipakai dan dimodifikasi pada
+akun serta grup milik sendiri. Yang diperlukan untuk menjalankannya hanyalah license key
+(lihat [Sistem Lisensi](#sistem-lisensi)).
+
+**Q: Kenapa bot tidak jalan setelah `node index.js`?**
+A: Karena edisi ini mewajibkan license key. Saat start, masukkan key yang valid di console.
+Tanpa key, bot berhenti. Key didapat dari owner.
+
+**Q: Cara login tanpa scan QR?**
+A: Edisi ini memakai **kode pairing**. Cukup input nomor WhatsApp saat diminta, lalu kode
+pairing akan muncul di console. Masukkan kode itu di WhatsApp › Perangkat Tertaut ›
+Tautkan dengan nomor telepon.
+
+**Q: Apa bedanya key shared dan individual?**
+A: **Shared** bisa dipakai banyak bot/user (cocok untuk dipakai bersama). **Individual**
+terkunci otomatis di satu mesin pertama yang memakainya. Pilih sesuai kebutuhan.
+
+**Q: Berapa lama key berlaku?**
+A: Durasi ditentukan saat penerbitan — bisa harian, bulanan, tahunan, atau seumur hidup
+(`lifetime`). Cek masa aktif key lewat `.licenseinfo`.
+
+**Q: Kenapa bot tiba-tiba menolak start dengan pesan "JEDA LISENSI AKTIF"?**
+A: Setelah 3 kali salah memasukkan key, bot memberi jeda 5 menit sebagai pengaman.
+Tunggu sampai hitung mundur habis, lalu coba lagi dengan key yang benar.
+
+**Q: Berapa batas penggunaan botnya?**
+A: Limit harian 50 command per user biasa, dan kuota 2 jadibot per user. Owner dan user
+premium tidak kena batas.
+
+**Q: Bolehkah dipakai untuk banyak grup / dijual kembali?**
+A: Boleh dipakai pada grup yang kamu kelola dengan izin pemiliknya. Untuk distribusi
+atau penjualan sebagai produk, silakan hubungi owner untuk skema lisensi yang sesuai.
+
+**Q: Butuh bantuan kalau ada masalah?**
+A: Buka *Issues* di repository ini, atau hubungi owner lewat kontak di
+[Profil Owner](#profil-owner). Sertakan log error agar mudah dibantu.
+
+---
+
 ## Kontribusi
 
 1. Buat branch fitur: `git checkout -b feat/nama-fitur`.
@@ -1122,6 +1190,28 @@ Terima kasih kepada semua pihak yang membuat proyek ini mungkin:
 - **Node.js** — runtime yang menopang seluruh layanan.
 - **Para kontributor & pengguna** — masukan, bug report, dan dukungan yang terus membuat proyek ini berkembang.
 - **Keluarga & teman-teman** — yang memberi ruang dan waktu untuk terus membangun.
+
+---
+
+## Watermark (WM)
+
+ManzxyMD menyisipkan watermark pada pesan dan kartu yang dikirim bot melalui
+`config.footerText`. Secara bawaan nilainya adalah:
+
+```js
+footerText: 'ManzxyMD'
+```
+
+Watermark ini muncul sebagai footer pada tombol, pesan rich, dan kartu interaktif, sehingga
+identitas bot tetap terlihat rapi tanpa mengganggu isi pesan. Nilai default lain yang
+terpakai di `lib/core/configDefaults.js` adalah `'ManzxyMD • Button & Rich Engine'`.
+
+**Bolehkah watermark diubah atau dihapus?**
+
+Boleh. Ini adalah script yang dibagikan untuk bersama, jadi kamu bebas menyesuaikannya.
+Ubah nilai `footerText` di `config.js` sesuai kebutuhan instalasimu. Meskipun begitu, kami
+berterima kasih bila kredit proyek tetap disertakan — misalnya dengan mempertahankan
+`ManzxyMD` pada footer atau menyebut repository ini saat membagikan script.
 
 ---
 
